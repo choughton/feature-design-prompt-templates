@@ -1,11 +1,11 @@
 # Feature Proposal Round N Synthesis Prompt
 
-**Template #8 in the Feature Design Process**
+**Template #9 in the Feature Design Process**
 **Type:** Single LLM (moderator), document generation
-**Pipeline position:** Step 9 — After any crossfire round on a feature proposal — synthesizes that round's responses + product owner decisions into an updated reconciled design
+**Pipeline position:** Step 10 — After any crossfire round on a feature proposal — synthesizes that round's responses + product owner decisions into an updated reconciled design
 **Chat:** Same chat as the synthesis moderator for this proposal cycle. If this is the first synthesis, start a new chat (Chat C). If iterating, continue the same chat.
 
-**Purpose:** Synthesizes crossfire rounds on feature proposals. After Round N's crossfire responses are collected and the product owner makes decisions, this template synthesizes them into an updated reconciled design that can either proceed to verification (Document 10) or feed into another crossfire round (Document 9).
+**Purpose:** Synthesizes crossfire rounds on feature proposals. After Round N's crossfire responses are collected and the product owner makes decisions, this template synthesizes them into an updated reconciled design that can either proceed to verification (Document 11) or feed into another crossfire round (Document 10).
 
 ---
 
@@ -64,8 +64,8 @@ crossfire. Structure it so the next round's reviewers can focus on
 the changes rather than re-reviewing settled elements.
 {{else}}
 This is the final reconciled design. It will proceed to final
-synthesis (Document 10), verification (Document 11), and then spec
-generation (Document 12).
+synthesis (Document 11), verification (Document 12), and then spec
+generation (Document 13).
 {{/if}}
 
 ## 3. Inputs
@@ -131,6 +131,15 @@ edge cases, scope):
 - Current state of the design (incorporating all rounds)
 - Mark sections that changed in this round vs. carried forward
 
+**Part 3.5: Screen Contract (if user-facing)**
+- Carry forward the Screen Contract from Document 7
+- Update any Screen Contract elements affected by this round's rulings
+- Mark Screen Contract changes with the same round tracking as other
+  design elements
+- If a ruling contradicts a Screen Contract hard constraint, flag this
+  explicitly — the product owner needs to decide whether to update the
+  Screen Contract or reverse the ruling
+
 **Part 4: Deferred Items (cumulative)**
 - All deferred items from all rounds
 - New deferrals from this round marked with the round number
@@ -165,17 +174,21 @@ The reconciled design:
 - Do not let the design grow unboundedly. Each round should converge
   the design, not expand it. If scope is growing with each round,
   flag it to the product owner.
+- Do not dissolve the Screen Contract into vague prose. The screen
+  inventory, hierarchy rules, layout constraints, required states, and
+  anti-goals must remain as a discrete, identifiable section in the
+  reconciled design — not absorbed into general interaction model text.
 ```
 
 ---
 
-## When to Use This vs. Document 7
+## When to Use This vs. Document 8
 
-Document 7 (`FEATURE_PROPOSAL_CROSSFIRE_PROMPT.md`) is the initial feature proposal prompt sent to LLMs to propose solutions from a problem statement.
+Document 8 (`FEATURE_PROPOSAL_CROSSFIRE_PROMPT.md`) is the initial feature proposal prompt sent to LLMs to propose solutions from a problem statement.
 
-Use this template (8) for any crossfire round where:
-- You're synthesizing feature proposals that came from Document 7
+Use this template (9) for any crossfire round where:
+- You're synthesizing feature proposals that came from Document 8
 - You're iterating on feature designs across multiple rounds
 - Round N synthesis feeds into either verification or another crossfire round
 
-The product owner decides after each synthesis whether to run another round (using Document 9 to generate the next crossfire prompt) or proceed to verification (Document 10).
+The product owner decides after each synthesis whether to run another round (using Document 10 to generate the next crossfire prompt) or proceed to verification (Document 11).

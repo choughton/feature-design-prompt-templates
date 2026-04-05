@@ -4,7 +4,7 @@ A structured, adversarial multi-model design process for taking a feature idea f
 
 ## What This Is
 
-14 prompt templates that codify a repeatable pipeline for feature design using multiple LLMs. The process sends design artifacts through independent adversarial review rounds (crossfire), where three frontier-tier models pressure-test claims, propose solutions, and surface failure modes — then a human decision-maker synthesizes the results.
+15 prompt templates that codify a repeatable pipeline for feature design using multiple LLMs. The process sends design artifacts through independent adversarial review rounds (crossfire), where three frontier-tier models pressure-test claims, propose solutions, and surface failure modes — then a human decision-maker synthesizes the results.
 
 The pipeline was developed and validated during the design of [LLM Crossfire](https://github.com/choughton/llm-crossfire)'s Planning feature. These templates generalize that process for any product.
 
@@ -12,8 +12,9 @@ The pipeline was developed and validated during the design of [LLM Crossfire](ht
 
 ```
 Triage → Exploration → Problem Statement → Crossfire Review
-    → Decision Synthesis → Feature Proposals → Iterative Crossfire
-    → Final Synthesis → Verification → Spec → Epics → PE Setup
+    → Decision Synthesis → Screen Contract → Feature Proposals
+    → Iterative Crossfire → Final Synthesis → Verification
+    → Spec → Epics → PE Setup
 ```
 
 The process doc (`01 - FEATURE_DESIGN_PROCESS.md`) covers the full workflow, chat session boundaries, decision checkpoint guidance, and when to use shortcuts.
@@ -28,14 +29,15 @@ The process doc (`01 - FEATURE_DESIGN_PROCESS.md`) covers the full workflow, cha
 | 04 | Problem Statement Synthesis | Single LLM |
 | 05 | Problem Statement Crossfire | Crossfire (×3 LLMs) |
 | 06 | Problem Statement Decision Synthesis | Single LLM |
-| 07 | Feature Proposal Crossfire | Crossfire (×3 LLMs) |
-| 08 | Feature Proposal Round N Synthesis | Single LLM |
-| 09 | Feature Proposal Round N+1 Crossfire | Crossfire (×3 LLMs) |
-| 10 | Final Decision Synthesis | Single LLM |
-| 11 | Verification | Single LLM |
-| 12 | Spec Generation | Single LLM |
-| 13 | Epic/Story Breakdown | Single LLM |
-| 14 | Implementation PE Setup | Single LLM (persistent) |
+| 07 | UI Drafting Brief — Screen Contract | Single LLM |
+| 08 | Feature Proposal Crossfire | Crossfire (×3 LLMs) |
+| 09 | Feature Proposal Round N Synthesis | Single LLM |
+| 10 | Feature Proposal Round N+1 Crossfire | Crossfire (×3 LLMs) |
+| 11 | Final Decision Synthesis | Single LLM |
+| 12 | Verification | Single LLM |
+| 13 | Spec Generation | Single LLM |
+| 14 | Epic/Story Breakdown | Single LLM |
+| 15 | Implementation PE Setup | Single LLM (persistent) |
 
 ## How To Use
 
@@ -48,7 +50,9 @@ The process doc (`01 - FEATURE_DESIGN_PROCESS.md`) covers the full workflow, cha
 
 **Crossfire rounds** send the same source document to three independent LLMs. They can't see each other's responses. Convergence = high confidence. Divergence = interesting design tradeoff that needs a human ruling.
 
-**Iterative crossfire** (Documents 8 and 9) lets you loop the design through additional review rounds. Each round's posture shifts from "propose from scratch" to "improve this." Settled decisions accumulate and can't be relitigated.
+**Screen Contract** (Document 7) constrains frontend interpretation before proposals. For user-facing features, it defines what each screen must do, what dominates, what stays quiet, required states, and anti-goals (what the UI must NOT do). It persists through synthesis, verification, spec, and implementation as a governing artifact.
+
+**Iterative crossfire** (Documents 9 and 10) lets you loop the design through additional review rounds. Each round's posture shifts from "propose from scratch" to "improve this." Settled decisions accumulate and can't be relitigated.
 
 **The universal prompt skeleton** (8 elements + a 9th for crossfire prompts) structures every template: Role, Task, Inputs, Assumptions, Validity Preconditions, Dimensions, Outcome Criteria, Constraints, and Synthesis Objective.
 

@@ -142,10 +142,10 @@ are the questions the adversarial pipeline would need to resolve.
 One of:
 - **Full pipeline (Document 3):** Significant open design questions.
   Start with idea exploration.
-- **Mid-pipeline (Document 5 or 7):** Problem is clear but solution
+- **Mid-pipeline (Document 5 or 8):** Problem is clear but solution
   needs adversarial validation. User writes the problem statement or
   feature proposal directly and starts at the relevant crossfire step.
-- **Skip to spec (Document 12):** Feature is well-defined in existing
+- **Skip to spec (Document 13):** Feature is well-defined in existing
   docs. Proceed directly to spec generation.
 
 **Rationale:** Why this entry point, in 2-3 sentences.

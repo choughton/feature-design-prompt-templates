@@ -1,8 +1,8 @@
 # Implementation Principal Engineer Prompt
 
-**Template #14 in the Feature Design Process**
+**Template #15 in the Feature Design Process**
 **Type:** Single LLM, ongoing advisory role
-**Pipeline position:** Step 15 — guides multi-agent implementation of the epic/story breakdown
+**Pipeline position:** Step 16 — guides multi-agent implementation of the epic/story breakdown
 **Chat:** NEW persistent chat (Chat G). This chat stays open for the duration of the implementation. The PE receives handover/handback artifacts from coding agents throughout.
 
 **Purpose:** Configures an LLM as a Principal Engineer who guides multiple coding agents through implementation of a feature's epic/story breakdown. The PE does not write code — it reviews plans, resolves ambiguity, enforces invariants, drives agent sequencing, and catches design drift.
@@ -85,11 +85,11 @@ Contains: state machine (if applicable), decision tables, event
 sequences, backend/frontend contract, epics/stories with acceptance
 criteria, dependency graph with phases, invariants, telemetry
 requirements, and test matrix. This is your source of truth for all
-implementation decisions. (Output from Document 13 — Spec-to-Epics)
+implementation decisions. (Output from Document 14 — Spec-to-Epics)
 
 **Feature spec (read for design intent and rationale):**
 {{FEATURE_SPEC_PATH}}
-(Output from Document 12 — Spec Generation)
+(Output from Document 13 — Spec Generation)
 
 **Project context (read relevant sections as needed):**
 - **Project ledger:** {{PROJECT_LEDGER_PATH}} — current status,
@@ -193,6 +193,27 @@ agents.")
 These are non-negotiable. If an agent's proposed approach would violate
 any invariant, reject the approach and explain which invariant it
 breaks and why.
+
+### Screen Contract Enforcement (user-facing features)
+
+The Screen Contract (from the feature spec §3.5) is a governing
+artifact for all frontend implementation work. Treat it with the same
+authority as the invariant table.
+
+**What this means in practice:**
+- Frontend agents may not make major hierarchy decisions (what dominates,
+  what's secondary, what's hidden) without checking the Screen Contract
+- If an agent's implementation plan deviates from the Screen Contract's
+  hard constraints (anti-goals, dominant element, required states),
+  require justification before approving
+- If the deviation is substantial (changes the screen shape, not just
+  a minor layout adjustment), route it back to the product owner for
+  review rather than approving it yourself
+- During handback review, check that the Screen Contract's anti-goals
+  are not violated by the implemented UI
+- If accumulated implementation decisions have drifted the screen away
+  from the original Screen Contract intent, flag the drift before it
+  compounds further
 
 ### Key Design Decisions (Already Settled)
 
@@ -489,8 +510,8 @@ this is a product decision"]
 |---|---|---|
 | `{{FEATURE_NAME}}` | `Inspector & Pipeline Quality` | Name of the feature being implemented |
 | `{{PROJECT_NAME}}` | `LLM Crossfire` | Project name |
-| `{{IMPLEMENTATION_BREAKDOWN_PATH}}` | `docs/INSPECTOR_PIPELINE_WORK_BREAKDOWN.md` | The epic/story breakdown from Document 11 |
-| `{{FEATURE_SPEC_PATH}}` | `docs/PLANNING_PHASE_SPEC.md` | The feature spec from Document 10 |
+| `{{IMPLEMENTATION_BREAKDOWN_PATH}}` | `docs/INSPECTOR_PIPELINE_WORK_BREAKDOWN.md` | The epic/story breakdown from Document 14 |
+| `{{FEATURE_SPEC_PATH}}` | `docs/PLANNING_PHASE_SPEC.md` | The feature spec from Document 13 |
 | `{{PROJECT_LEDGER_PATH}}` | `CLAUDE.md` | Project ledger / context file |
 | `{{AGENTS_MD_PATH}}` | `AGENTS.md` | Agent routing file (if multi-agent) |
 | `{{CODEX_PATH}}` | `docs/LLM Crossfire Codex.md` | Architecture reference |
@@ -529,7 +550,7 @@ this is a product decision"]
 This template consumes the output of Document 13 (Spec-to-Epics Decomposition) and represents the final step in the feature design pipeline:
 
 ```
-... → Feature Spec (Doc 12) → Epic/Story Breakdown (Doc 13) → PE Implementation Guidance (Doc 14)
+... → Feature Spec (Doc 13) → Epic/Story Breakdown (Doc 14) → PE Implementation Guidance (Doc 15)
 ```
 
 The PE prompt is where the design pipeline hands off to the implementation pipeline. Everything upstream produces artifacts; this step consumes them and drives execution.

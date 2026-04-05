@@ -1,9 +1,9 @@
 # Spec Generation Prompt
 
-**Template #12 in the Feature Design Process**
+**Template #13 in the Feature Design Process**
 **Type:** Single LLM, document generation
-**Pipeline position:** Step 13 — transforms the reconciled design into a feature specification
-**Chat:** NEW chat (Chat F). The spec must stand on its own without the prior conversation context. This chat continues into Document 13 (epic/story breakdown).
+**Pipeline position:** Step 14 — transforms the reconciled design into a feature specification
+**Chat:** NEW chat (Chat F). The spec must stand on its own without the prior conversation context. This chat continues into Document 14 (epic/story breakdown).
 
 **Purpose:** Transforms the output of the adversarial design process (reconciled design + product owner decisions) into a coherent feature specification ready for implementation scoping.
 
@@ -166,6 +166,31 @@ If the interaction adapts to context (different behavior for different
 input types, user states, etc.), create a table mapping input
 conditions to interaction behavior.
 
+### §3.5. Screen Contract (if user-facing)
+
+For each major surface the feature touches, include the finalized Screen
+Contract from the reconciled design. This section makes the intended
+screen shape explicit for the implementation team.
+
+For each surface:
+- **Surface name and purpose**
+- **Primary user decision** — what the user decides or does here
+- **Dominant element** — what commands attention
+- **Secondary elements** — what supports without competing
+- **Layout skeleton** — structural regions and containment
+- **Default emphasis** — expanded/collapsed/pinned/quiet defaults
+- **Required states** — empty, loading, error, success, disabled,
+  destructive, long-content, narrow viewport (as applicable)
+- **Interaction constraints** — clickable, persistent, collapsible,
+  confirm-gated, must-remain-in-view elements
+- **Anti-goals** — what this surface must NOT do
+
+This section is not a wireframe or mockup. It is a structural contract
+that constrains frontend implementation. When a developer asks "should
+this panel be prominent or tucked away?", the answer is in this section.
+
+If the feature is not user-facing, omit this section.
+
 ### §4. Input Handling Matrix (if applicable)
 
 If the feature behaves differently based on input characteristics,
@@ -287,7 +312,11 @@ Before finalizing the spec, verify:
    from §1, not abstract personas. The anti-patterns are specific
    enough that a developer could recognize them in a code review.
 
-8. **Companion doc alignment** — The spec doesn't contradict the project's
+8. **Screen Contract present** — For user-facing features, every surface
+   in the Screen Contract appears in §3.5 with all required fields
+   populated. No surface was silently dropped during spec generation.
+
+9. **Companion doc alignment** — The spec doesn't contradict the project's
    design philosophy, PRD, or other canonical docs. Where it introduces
    a new pattern, it acknowledges the relationship to existing patterns.
 
@@ -353,19 +382,19 @@ This template produces the input for the **Spec-to-Epics Decomposition** templat
 Adversarial Session Artifacts
         │
         ▼
-  [This template — Doc 12]
+  [This template — Doc 13]
         │
         ▼
   Feature Specification
         │
         ▼
-  [Spec-to-Epics template — Doc 13]
+  [Spec-to-Epics template — Doc 14]
         │
         ▼
   Implementation Breakdown
         │
         ▼
-  [Implementation PE Prompt — Doc 14]
+  [Implementation PE Prompt — Doc 15]
         │
         ▼
   Multi-Agent Coding Sessions

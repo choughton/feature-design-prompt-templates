@@ -1,8 +1,8 @@
 # Spec-to-Epics Decomposition Prompt
 
-**Template #13 in the Feature Design Process**
+**Template #14 in the Feature Design Process**
 **Type:** Single LLM, document generation
-**Pipeline position:** Step 14 — decomposes the feature spec into implementation-ready epics and stories
+**Pipeline position:** Step 15 — decomposes the feature spec into implementation-ready epics and stories
 **Chat:** Same chat as spec generation (Chat F). The breakdown follows directly from the spec.
 
 **Purpose:** Decomposes a feature specification into implementation-ready epics and stories suitable for multi-agent coding sessions.
@@ -20,7 +20,7 @@ coding agents can execute in parallel with minimal coordination overhead.
 
 ## Inputs
 
-**Spec document:** {{SPEC_FILE_PATH_OR_INLINE}}
+**Spec document:** {{SPEC_FILE_PATH_OR_INLINE}} (Output from Document 13 — Spec Generation)
 **Codebase reference:** {{REPO_NAME}} @ {{BRANCH}}
 **Tech stack:** {{TECH_STACK_SUMMARY}}
 **Project context file(s):** {{CLAUDE_MD_OR_EQUIVALENT_PATH}}
@@ -126,7 +126,26 @@ For each endpoint (new or modified):
 Include a data flow diagram showing how frontend components call backend
 endpoints and how data flows through the system.
 
-### 5. Epics and Stories
+### 5. Screen Contract Validation (user-facing epics only)
+
+For each epic that includes frontend work, the first frontend story
+must include the following acceptance criterion:
+
+**Screen Contract check:** Before proceeding with remaining frontend
+stories in this epic, validate that the implementation approach matches
+the Screen Contract from the spec (§3.5):
+- Layout skeleton matches the specified regions
+- Dominant element is visually dominant (not competing with secondary)
+- Required states are accounted for in component structure
+- Anti-goals are not violated by the proposed implementation approach
+- Interaction constraints are implementable with the chosen component
+  architecture
+
+This is not a separate blocking story — it is a required acceptance
+criterion on the first frontend story. The PE or product owner reviews
+this before the remaining frontend stories in the epic proceed.
+
+### 6. Epics and Stories
 
 Decompose into epics and stories following these rules:
 
@@ -180,7 +199,7 @@ For each story within an epic:
 - Stories within an epic are ordered by implementation sequence
 - No story exceeds ~200 lines of implementation code. If it does, split it.
 
-### 6. Dependency Graph
+### 7. Dependency Graph
 
 Draw an ASCII dependency graph showing:
 - Which epics depend on which
@@ -198,7 +217,7 @@ Follow with an implementation phasing table:
 Identify: critical path, parallel work opportunities, and the phase
 where the backend contract locks (after which frontend work can begin).
 
-### 7. Invariants (Must Never Happen)
+### 8. Invariants (Must Never Happen)
 
 Create a table of invariants — conditions that must NEVER be true in any
 valid state of the system. These are the rules that, if violated, indicate
@@ -218,7 +237,7 @@ Invariants are derived from:
 These serve as the cross-agent coordination contract. Every agent must
 verify their work against the invariant table before marking a story done.
 
-### 8. Telemetry Requirements (if applicable)
+### 9. Telemetry Requirements (if applicable)
 
 If the spec defines metrics or analytics:
 
@@ -230,7 +249,7 @@ If the spec defines metrics or analytics:
 
 Skip this section if the spec has no telemetry requirements.
 
-### 9. Test Matrix
+### 10. Test Matrix
 
 Organize all tests from the stories into a consolidated matrix:
 
@@ -316,7 +335,7 @@ Before finalizing the breakdown, verify:
 
 | Placeholder | Example Value | Notes |
 |---|---|---|
-| `{{SPEC_FILE_PATH_OR_INLINE}}` | `docs/PLANNING_PHASE_SPEC.md` | Path or paste inline |
+| `{{SPEC_FILE_PATH_OR_INLINE}}` | `docs/PLANNING_PHASE_SPEC.md` | Path or paste inline (from Document 13) |
 | `{{REPO_NAME}}` | `crossfire` | Repository name |
 | `{{BRANCH}}` | `main` | Branch to explore |
 | `{{TECH_STACK_SUMMARY}}` | `Python 3.11+ FastAPI backend, React 18 TypeScript + Vite frontend, SQLite` | One line |

@@ -1,8 +1,8 @@
 # Verification Prompt
 
-**Template #11 in the Feature Design Process**
+**Template #12 in the Feature Design Process**
 **Type:** Single LLM, structured verification
-**Pipeline position:** Step 12 — validates the reconciled design against reference docs and settled decisions
+**Pipeline position:** Step 13 — validates the reconciled design against reference docs and settled decisions
 **Chat:** NEW chat (Chat E). This must be independent from the chat that produced the reconciled design — the verifier is checking someone else's work, not its own.
 
 ---
@@ -11,7 +11,7 @@
 
 1. Start a new chat — do NOT reuse the synthesis moderator chat
 2. Replace all `{{PLACEHOLDER}}` fields with your project-specific values
-3. Provide the reconciled design document from Step 11
+3. Provide the reconciled design document from Step 12
 4. Provide all project reference docs
 5. The LLM produces a structured verification report
 6. Review the findings and make any final corrections to the reconciled design before proceeding to spec generation
@@ -134,6 +134,21 @@ Structure your verification around these checklists:
 - Are any decisions encoded incorrectly (present but misrepresented)?
 - Are any decisions missing entirely?
 
+**Screen Contract alignment (if user-facing):**
+- Does the interaction model in the reconciled design match the Screen
+  Contract's hierarchy? (dominant element is dominant, secondary stays
+  secondary)
+- Are all required states from the Screen Contract actually handled in
+  the design?
+- Does the design introduce any elements that violate the Screen
+  Contract's anti-goals?
+- Has the layout skeleton been preserved, or has the design introduced
+  structural changes without updating the Screen Contract?
+- Are interaction constraints from the Screen Contract reflected in the
+  design's interaction model?
+- If the Screen Contract was updated during synthesis rounds, are the
+  updates consistent with the product owner's rulings?
+
 ## 7. Outcome Criteria
 
 Produce a verification report with this structure:
@@ -143,7 +158,7 @@ for spec generation, or does it need corrections?
 
 **Findings:** For each finding:
 - **Dimension:** (internal consistency / external alignment /
-  completeness / decision encoding)
+  completeness / decision encoding / screen contract alignment)
 - **Severity:** (blocker — must fix before spec / warning — should fix
   but spec can proceed / note — minor observation)
 - **Finding:** What's wrong or missing, with specific references to

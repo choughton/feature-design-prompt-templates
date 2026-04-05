@@ -1,8 +1,8 @@
 # Feature Proposal Crossfire Prompt
 
-**Template #7 in the Feature Design Process**
+**Template #8 in the Feature Design Process**
 **Type:** Crossfire — sent to each LLM independently
-**Pipeline position:** Step 7 — three LLMs independently propose features to solve the validated problem
+**Pipeline position:** Step 8 — three LLMs independently propose features to solve the validated problem
 **Chat:** Three NEW separate chats (Chat D × 3). One per LLM (Claude, ChatGPT, Gemini).
 
 ---
@@ -66,6 +66,24 @@ This document contains:
 - Constraints and explicit exclusions
 - Proposal dimensions to address
 - Evaluation criteria
+
+{{#if SCREEN_CONTRACT}}
+**Screen Contract (Document 7):**
+{{SCREEN_CONTRACT_DOCUMENT_OR_PATH}}
+
+This document defines the structural UI intent for every user-facing
+surface the feature touches: dominant elements, hierarchy, layout
+skeleton, required states, interaction constraints, and anti-goals.
+
+Your proposal must respect the Screen Contract's **hard constraints**
+(anti-goals, primary user decision, dominant element hierarchy, required
+states). You may deviate from **soft guidance** (layout skeleton, default
+emphasis, secondary element placement) if you provide explicit
+justification for the deviation.
+
+If the Screen Contract is not present, the feature is backend-only and
+this section does not apply.
+{{/if}}
 
 **Companion documents — read the sections referenced in the source
 document header:**
@@ -139,6 +157,20 @@ proposal dimensions, which may customize this list):
 - What are the key tradeoffs in your design?
 - What did you choose and why?
 - What's the cost of your choices?
+
+{{#if SCREEN_CONTRACT}}
+**Screen Contract alignment (if user-facing):**
+For each surface defined in the Screen Contract:
+- Does your proposal respect the primary user decision?
+- Does it preserve the intended dominant element?
+- Does it keep secondary elements secondary?
+- Does it satisfy all required states?
+- Are any interaction constraints violated?
+- Are any anti-goals violated?
+If your proposal deviates from any hard constraint, flag the deviation
+explicitly and explain why the Screen Contract's constraint creates a
+design contradiction or failure mode that justifies the change.
+{{/if}}
 
 ## 7. Outcome Criteria
 

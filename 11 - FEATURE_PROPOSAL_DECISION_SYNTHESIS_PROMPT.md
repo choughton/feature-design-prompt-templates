@@ -1,9 +1,9 @@
 # Feature Proposal Final Decision Synthesis Prompt
 
-**Template #10 in the Feature Design Process**
+**Template #11 in the Feature Design Process**
 **Type:** Single LLM (moderator), document generation
-**Pipeline position:** Step 11 — produces the final reconciled design from either a single crossfire round or after iterative refinement rounds
-**Chat:** Same chat (Chat C) as Document 8 synthesis rounds. If no iteration rounds were run, start a new chat (Chat C) here.
+**Pipeline position:** Step 12 — produces the final reconciled design from either a single crossfire round or after iterative refinement rounds
+**Chat:** Same chat (Chat C) as Document 9 synthesis rounds. If no iteration rounds were run, start a new chat (Chat C) here.
 
 ---
 
@@ -11,10 +11,10 @@
 
 This template operates in two modes depending on whether you ran iteration rounds (Documents 8 and 9):
 
-### Mode A: After iteration rounds (Documents 8 → 9 → 8 loop)
+### Mode A: After iteration rounds (Documents 9 → 10 → 9 loop)
 
-1. Continue the same Chat C where Document 8 synthesis rounds happened
-2. The final reconciled design from the last Document 8 round is already in context
+1. Continue the same Chat C where Document 9 synthesis rounds happened
+2. The final reconciled design from the last Document 9 round is already in context
 3. Add any final rulings or corrections
 4. Send this prompt
 5. The LLM produces the canonical final design artifact
@@ -77,7 +77,7 @@ Additional behavioral rules for single-round mode:
 
 {{#if POST_ITERATION}}
 You have these inputs:
-1. The final reconciled design from the last synthesis round (Document 8)
+1. The final reconciled design from the last synthesis round (Document 9)
    — already in context from this chat
 2. Cumulative settled decisions from all rounds
 3. The product owner's final rulings or corrections (if any)
@@ -87,8 +87,8 @@ Produce the canonical final design that:
 - Reads as a unified, coherent design — no round-layering artifacts
 - Encodes every settled decision from every round
 - Resolves any remaining open questions (or explicitly defers them)
-- Is complete enough for verification (Document 11) and spec generation
-  (Document 12)
+- Is complete enough for verification (Document 12) and spec generation
+  (Document 13)
 {{else}}
 You have these inputs:
 1. The feature proposal prompt document (the problem + constraints)
@@ -102,14 +102,14 @@ Produce a reconciled feature design that:
 - Resolves all contested items
 - Is coherent and internally consistent (no Frankenstein assembly)
 
-This reconciled design will be verified for completeness (Step 12),
-then transformed into a feature spec (Step 13).
+This reconciled design will be verified for completeness (Step 13),
+then transformed into a feature spec (Step 14).
 {{/if}}
 
 ## 3. Inputs
 
 {{#if POST_ITERATION}}
-- **Final reconciled design from Document 8:** Already in context
+- **Final reconciled design from Document 9:** Already in context
 - **Cumulative settled decisions:** Already in context from prior
   synthesis rounds
 - **Product owner final rulings/corrections:** [pasted by the user,
@@ -199,8 +199,15 @@ edge cases, scope):
 - All deferred items with rationale
 - No round attribution needed — just the item and why it's deferred
 
+**Part 4.5: Final Screen Contract (if user-facing)**
+- The canonical Screen Contract as it stands after all rounds
+- All surfaces with their final hierarchy, layout, states, and anti-goals
+- No round markers — written as definitive screen intent
+- This section is consumed directly by verification (Document 12),
+  spec generation (Document 13), and implementation (Documents 14-15)
+
 **Part 5: Open Questions (if any remain)**
-- Questions that verification (Document 11) should specifically check
+- Questions that verification (Document 12) should specifically check
 {{else}}
 **Part 1: Cross-Proposal Consensus**
 - What did all three proposals agree on? These are high-confidence
@@ -224,10 +231,16 @@ model, edge cases, scope):
 - For each: what it is and why it's deferred (not just "out of scope"
   but the specific reason)
 
+**Part 4.5: Final Screen Contract (if user-facing)**
+- The Screen Contract from Document 7, updated to reflect any changes
+  from the product owner's rulings on the proposals
+- All surfaces with their final hierarchy, layout, states, and anti-goals
+- This section is consumed directly by downstream steps
+
 **Part 5: Open Questions (if any remain)**
 - Any design questions that the proposals raised but the product
   owner's rulings didn't fully resolve
-- These will be addressed in the verification step
+- These will be addressed in the verification step (Step 13)
 {{/if}}
 
 ## 7. Outcome Criteria
@@ -239,7 +252,7 @@ The final reconciled design:
 - Encodes every product owner ruling
 - Has no internal contradictions
 - Preserves every deferred item with a rationale
-- Is complete enough that verification (Document 11) can check it for
+- Is complete enough that verification (Document 12) can check it for
   gaps against the project context docs
 - Is self-contained: a reader unfamiliar with the crossfire process
   can understand the full design from this document alone
@@ -265,12 +278,12 @@ The final reconciled design:
 
 ---
 
-## When to Use This vs. Document 8
+## When to Use This vs. Document 9
 
-Document 8 (`FEATURE_PROPOSAL_ROUND_N_SYNTHESIS_PROMPT.md`) is for intermediate synthesis during iterative crossfire rounds. It produces a reconciled design with change tracking, round markers, and cumulative decision records — optimized for feeding into the next round.
+Document 9 (`FEATURE_PROPOSAL_ROUND_N_SYNTHESIS_PROMPT.md`) is for intermediate synthesis during iterative crossfire rounds. It produces a reconciled design with change tracking, round markers, and cumulative decision records — optimized for feeding into the next round.
 
-This template (10) is for the FINAL synthesis — whether after one round or many. It produces a clean, self-contained design artifact optimized for downstream consumption by verification (Document 11) and spec generation (Document 12).
+This template (11) is for the FINAL synthesis — whether after one round or many. It produces a clean, self-contained design artifact optimized for downstream consumption by verification (Document 12) and spec generation (Document 13).
 
 **Single crossfire round (no iteration):** Use this template directly after collecting three proposals + product owner decisions.
 
-**After iteration rounds:** Use Document 8 for each intermediate round, then use this template to finalize the last reconciled design into a clean canonical artifact.
+**After iteration rounds:** Use Document 9 for each intermediate round, then use this template to finalize the last reconciled design into a clean canonical artifact.

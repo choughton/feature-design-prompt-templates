@@ -141,6 +141,22 @@ Before producing the outputs, check:
   rulings, non-goals, or architectural constraints)
 - **Companion doc references:** Which project docs each proposal model
   should read, with specific section callouts
+- **UI drafting applicability:** Whether this feature requires a Screen
+  Contract step (Document 7) before proposals. State one of:
+  - Required — the feature is user-facing and alters layout, hierarchy,
+    interaction flow, or screen interpretation
+  - Not applicable — the feature is backend-only or invisible
+    infrastructure with no UI surface
+  If required, also include:
+  - **Affected user-facing surfaces:** List the screens, panels, modals,
+    drawers, or views the feature will touch
+  - **Primary user decisions:** What the user needs to decide or do on
+    each affected surface
+  - **Known hierarchy constraints:** Any early rulings about what should
+    dominate or stay subordinate on each surface
+  This section prepares the UI Drafting step — it does not replace it.
+  Keep it to 5-10 lines. The Screen Contract (Document 7) will develop
+  these notes into a full structural specification.
 
 ## 7. Outcome Criteria
 

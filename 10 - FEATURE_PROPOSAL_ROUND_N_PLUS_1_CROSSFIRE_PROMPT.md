@@ -1,18 +1,18 @@
 # Feature Proposal Round N+1 Crossfire Prompt
 
-**Template #9 in the Feature Design Process**
+**Template #10 in the Feature Design Process**
 **Type:** Crossfire — sent to each LLM independently
-**Pipeline position:** Step 10 — After a Round N synthesis, when the product owner decides to run another crossfire round on the feature proposal
+**Pipeline position:** Step 11 — After a Round N synthesis, when the product owner decides to run another crossfire round on the feature proposal
 **Chat:** Three NEW separate chats. One per LLM (Claude, ChatGPT, Gemini). Fresh chats for every round.
 
-**Purpose:** Sends the updated reconciled design from Round N back through a crossfire round. Unlike Document 7 (initial proposals from scratch), this prompt asks each LLM to review an existing reconciled design and propose targeted improvements — not to design from scratch.
+**Purpose:** Sends the updated reconciled design from Round N back through a crossfire round. Unlike Document 8 (initial proposals from scratch), this prompt asks each LLM to review an existing reconciled design and propose targeted improvements — not to design from scratch.
 
 ---
 
 ## How To Use This Template
 
 1. Replace all `{{PLACEHOLDER}}` fields with your project-specific values
-2. Take the reconciled design produced by the Round N synthesis (Document 8)
+2. Take the reconciled design produced by the Round N synthesis (Document 9)
 3. Send this prompt + the reconciled design to each of three LLMs in separate chat sessions
 4. Each LLM receives the same inputs. They cannot see each other's responses.
 5. Collect all three responses in full — do not summarize or edit before the next synthesis step
@@ -145,6 +145,20 @@ Structure your review around these dimensions:
 - Has round-over-round iteration introduced patterns that conflict
   with existing conventions?
 
+**Screen Contract alignment (if user-facing):**
+- Does the reconciled design still respect the Screen Contract from
+  Document 7?
+- Has round-over-round iteration introduced hierarchy drift (secondary
+  elements creeping toward dominance, primary actions pushed down)?
+- Has the design accumulated UI complexity that violates anti-goals?
+- Are required states still covered, or have new interaction paths
+  introduced states the Screen Contract didn't anticipate?
+- Has the layout skeleton been distorted by added features or panels?
+- Are any new elements competing with the dominant element for attention?
+If the design still works technically but the screen shape has bloated
+or drifted from the original intent, that is a first-class finding —
+not a minor style note.
+
 ## 7. Outcome Criteria
 
 Produce a structured review that:
@@ -183,7 +197,7 @@ the product owner. The product owner will:
 - Identify convergent concerns (raised by 2+ reviewers — likely real)
 - Identify divergent suggestions (design tradeoffs needing a ruling)
 - Make numbered decisions on contested items
-- Feed decisions into the next synthesis round (Document 8)
+- Feed decisions into the next synthesis round (Document 9)
 
 Focus on your highest-conviction findings rather than trying to cover
 every dimension. If you only have one blocker but it's critical,
@@ -197,13 +211,13 @@ and explain what another round would need to address.
 
 ---
 
-## When to Use This vs. Document 7
+## When to Use This vs. Document 8
 
-Document 7 (`FEATURE_PROPOSAL_CROSSFIRE_PROMPT.md`) is for the initial crossfire round where LLMs propose features from scratch against a validated problem statement.
+Document 8 (`FEATURE_PROPOSAL_CROSSFIRE_PROMPT.md`) is for the initial crossfire round where LLMs propose features from scratch against a validated problem statement.
 
-Use this template (9) when:
+Use this template (10) when:
 - A reconciled design already exists from a prior round
 - The product owner wants another round of review and refinement
 - The design posture is "improve this" not "propose something new"
 
-The iteration loop is: **9** (crossfire review) → **8** (synthesis + decisions) → decide: another round (back to **9**) or proceed to verification (**Document 10**).
+The iteration loop is: **10** (crossfire review) → **9** (synthesis + decisions) → decide: another round (back to **10**) or proceed to verification (**Document 11**).
