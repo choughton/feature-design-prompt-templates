@@ -1,6 +1,6 @@
 # Feature Design Process Guide
 
-**Purpose:** End-to-end workflow for taking a feature idea from initial concept through implementation-ready epics and stories. This process codifies the adversarial multi-model design methodology originally developed during the design of [LLM Crossfire](https://getcrossfire.net)'s Planning feature.
+**Purpose:** End-to-end workflow for taking a feature idea from initial concept through implementation-ready epics and stories. This process codifies an adversarial multi-model design methodology developed and validated on real product work.
 
 **Who this is for:** The product owner (you) coordinating with LLMs to design, validate, and scope new features.
 

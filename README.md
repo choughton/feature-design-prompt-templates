@@ -11,7 +11,7 @@ This repo contains **15 numbered documents**:
 - **1 process guide** that explains the workflow, shortcut paths, chat/session boundaries, and decision checkpoints
 - **14 prompt templates** that execute the workflow across discovery, adversarial review, synthesis, verification, spec generation, and implementation setup
 
-The method was validated by using it to design [LLM Crossfire](https://getcrossfire.net) itself — 13 adversarial review cycles across three frontier models produced the specification the product runs on today. It is best suited to products that already have canonical source docs, a human decision-maker who will make explicit rulings, and a willingness to run multiple independent LLM sessions in parallel.
+The method is best suited to products that already have canonical source docs, a human decision-maker who will make explicit rulings, and a willingness to run multiple independent LLM sessions in parallel.
 
 ## What This Is Not
 
@@ -20,13 +20,12 @@ The method was validated by using it to design [LLM Crossfire](https://getcrossf
 - **Not a single-LLM prompt-tuning framework.** The core value comes from comparing *independent* outputs across three different frontier models. One model with a clever prompt does not produce the same signal.
 - **Not a PRD substitute.** You need canonical source docs (PRD, architecture notes, design principles) *before* Document 2 can triage anything.
 
-## How This Fits With The Rest Of The Stack
+## Companion Repo
 
-Three related projects, three different layers of the same idea — *the way you structure AI changes the quality of thinking you get back*:
+Same underlying idea — *the way you structure AI changes the quality of thinking you get back* — applied at a different layer:
 
 - **[LLM Directive Framework](https://github.com/choughton/llm-directive-framework)** — tune *one* model for sharper, less sycophantic output
 - **This repo** — run structured adversarial design pressure across *multiple* models
-- **[LLM Crossfire](https://getcrossfire.net)** — the productized version for teams with high-stakes decisions and auditability needs
 
 ## Read This First
 
@@ -207,13 +206,13 @@ If you run the full workflow, the repo should produce:
 8. **Constraints:** Hard boundaries the LLM must not cross.
 9. **Synthesis Objective:** (For Crossfire prompts only) Instructions on how to disagree constructively.
 
-## Origins: The LLM Directive Framework & Crossfire
+## Origins
 
-This repository, and the [LLM Crossfire](https://getcrossfire.net) workflow it supports, grew out of a simple idea: **the way you frame AI changes the quality of thinking you get back.**
+This repository grew out of a simple idea: **the way you frame AI changes the quality of thinking you get back.**
 
-Before Crossfire was a product, it started as a frustration. Default AI assistants are often optimized to feel helpful rather than to think sharply. To fix this, I created the **LLM Directive Framework**—a set of personal instructions designed to pull more rigorous, challenging behavior out of models like Claude, ChatGPT, and Gemini. Those directives didn't just change the tone of the interaction; they actively accelerated the design, specification, and build process by keeping the focus on clarity and reducing "flattery noise." First, the directives improved the thinking loop for individual models. Then, that same thinking loop produced Crossfire.
+It started as a frustration. Default AI assistants are often optimized to feel helpful rather than to think sharply. To fix that, I created the **[LLM Directive Framework](https://github.com/choughton/llm-directive-framework)** — a set of personal instructions designed to pull more rigorous, challenging behavior out of models like Claude, ChatGPT, and Gemini. Those directives didn't just change the tone of the interaction; they actively accelerated the design, specification, and build process by keeping the focus on clarity and reducing "flattery noise."
 
-Crossfire is the product-level evolution of that same philosophy. Once you have multiple strong model opinions, the challenge is no longer generation—it's reconciliation. Three different analyses don't automatically create clarity; without structure, they create a new judgment problem. The feature design process outlined in these templates is built to impose that structure, turning multi-model disagreement into a cleaner surface for human decision-making. We didn't just want a nicer AI; we wanted a sharper AI.
+This repository is the next step in the same philosophy. Once you have multiple strong model opinions, the challenge is no longer generation — it's reconciliation. Three different analyses don't automatically create clarity; without structure, they create a new judgment problem. The feature design process outlined in these templates is built to impose that structure, turning multi-model disagreement into a cleaner surface for human decision-making. The goal isn't a nicer AI — it's a sharper one.
 
 ## License
 
