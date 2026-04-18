@@ -143,6 +143,15 @@ full block for each affected surface.
 
 ### Screen / Surface: [Name]
 
+**Executive contract (REQUIRED — one short paragraph, hard constraints
+only)**
+A ~60-word summary that captures, for this surface: what it is for,
+the single dominant element, and the top 2–3 forbidden patterns. This
+is what an implementer reads if they read nothing else. If the
+implementer only has 30 seconds, the executive contract must be enough
+to prevent the worst classes of drift. Write this section LAST, after
+the rest of the surface is defined, but place it FIRST in the output.
+
 **Purpose**
 What this surface is for — one sentence.
 
@@ -154,6 +163,14 @@ surface. This is the single most important thing the surface serves.
 What should visually carry the screen. The element that commands
 attention. There must be exactly one dominant element per surface — if
 two things compete for dominance, the hierarchy is broken.
+
+**Tiebreaker clause (only if needed)**
+If a surface genuinely has two co-primary tasks (e.g., a composer
+paired with a findings list on the same screen), you may declare a
+"dominant cluster" instead of a single element. Name both members,
+assign relative weight (e.g., 60/40), and justify why they cannot be
+split across surfaces. Use sparingly — most surfaces with two
+"dominant" elements should actually be two surfaces.
 
 **Secondary elements**
 What supports the primary task but must not compete with the dominant
@@ -182,17 +199,32 @@ For each significant element, state its default visibility:
 These defaults define the screen's resting state — what the user sees
 before they interact.
 
+**First-paint priority**
+What MUST be visible and legible at first paint, before any secondary
+data arrives. For data-dependent surfaces, distinguish:
+- "Must be in the DOM before data loads" (chrome, layout skeleton,
+  primary CTA region)
+- "Can load with data" (content, counts, dynamic secondary elements)
+- "Can lazy-load" (optional detail, non-critical panels)
+For surfaces that aggregate from multiple sources, specify which
+source blocks the first paint and which degrade gracefully.
+
 **Required states**
 Which of these states must the surface handle? For each applicable
 state, note what the user should see:
-- empty (no data yet)
-- loading (data in flight)
+- empty (no data has ever existed — e.g., brand-new session)
+- loading (data in flight for the first time)
+- partial / stale (previous data still rendered while refreshing —
+  important for multi-round or polling surfaces; user must be able to
+  distinguish "current" from "stale")
 - error (operation failed)
 - success (operation completed)
 - disabled (action unavailable)
 - destructive (irreversible action pending)
 - long-content / overflow (more data than fits)
 - narrow viewport / constrained layout (if applicable)
+- degraded (partial backend functionality — e.g., 2-of-3 providers
+  responded; surface must adapt, not block)
 Not all states apply to all surfaces. Mark inapplicable states as N/A.
 
 **Interaction constraints**
@@ -204,18 +236,41 @@ Not all states apply to all surfaces. Mark inapplicable states as N/A.
 - What must remain in-view (never scroll out of reach)
 - What can be dismissed and how
 
-**Anti-goals / forbidden patterns**
-What this surface must NOT do. Be specific. Examples:
-- metadata must not overpower findings
+**Keyboard / shortcut contract**
+Two to four lines maximum. Specify:
+- Tab order (any deviations from DOM order? any trap?)
+- Escape semantics (what does ESC close on this surface?)
+- Primary-action keyboard shortcut (Enter, Cmd/Ctrl+Enter, etc.)
+- Focus return target on dismissal (where does focus land when a
+  modal or drawer closes?)
+This is a structural concern, not an a11y concern — it constrains how
+the surface behaves under keyboard input regardless of screen reader
+considerations.
+
+**Anti-goals / forbidden patterns (SPLIT INTO TWO GROUPS)**
+
+*Emphasis anti-goals — what must not visually dominate:*
+- metadata must not overpower primary content
 - secondary context must not dominate the workspace
 - primary CTA must not be below the fold
 - decorative elements must not displace signal
-- destructive actions must not be hidden or ambiguous
 - badges/indicators must not compete with the primary task
 
-This section is the highest-leverage part of the Screen Contract. Be
-aggressive about naming what's forbidden — these constraints prevent
-more implementation mistakes than the positive specifications.
+*Behavior anti-goals — what must not happen on interaction:*
+- destructive actions must not be hidden or ambiguous
+- undo must not be a disappearing toast (when an explicit undo is
+  required by the product's action model)
+- confirmation dialogs must not be used for reversible, low-cost
+  actions
+- modals must not stack
+- side effects must not fire on hover
+- scroll position must not be lost on panel open/close
+- keyboard shortcuts must not hijack default browser behavior
+
+List items are examples. Fill in the specific anti-goals for your
+surface. Be aggressive about naming what's forbidden — these
+constraints prevent more implementation mistakes than the positive
+specifications.
 
 ### Constraint classification
 
@@ -223,13 +278,38 @@ After defining all surfaces, classify each constraint as:
 
 - **Hard constraint:** Proposals must respect this. Deviation requires
   flagging a serious design contradiction or failure mode.
-  (Anti-goals, primary user decision, dominant element hierarchy,
-  required states)
+  (Executive contract, anti-goals, primary user decision, dominant
+  element hierarchy, required states, first-paint priority, keyboard
+  contract)
 - **Soft guidance:** Proposals may deviate with justification.
-  (Layout skeleton, default emphasis, secondary element placement)
+  (Layout skeleton, default emphasis, secondary element placement,
+  tiebreaker cluster weightings)
 
 This classification tells proposal models where they have creative
 latitude and where they don't.
+
+### Surface transitions / flow invariants
+
+After defining all surfaces, add a single SHARED section listing flow
+rules that cut ACROSS surfaces. Do not repeat these per surface. Cover
+at minimum:
+- Focus management on modal/drawer open and close (where does focus
+  land on dismiss?)
+- Scroll preservation across panel open/close and across navigation
+- Modal stacking policy (is it ever allowed? how do transitions
+  between modals work — stack, swap, queue?)
+- Toast placement and duration (consistent across the app)
+- Deep-link behavior (URL parameters that must hydrate specific state)
+- Refresh ordering after state-mutating operations (if refreshing A
+  before B causes a visible inconsistency, specify the order)
+- Undo scope (which actions are undoable and on which surfaces does
+  undo appear?)
+- Hydration failure behavior (if secondary data fails to load, does
+  the primary surface still render?)
+
+These invariants catch an entire class of bugs that per-surface
+contracts miss: the user's perception of a product is shaped by the
+transitions between surfaces as much as the surfaces themselves.
 
 ## 7. Outcome Criteria
 
@@ -260,12 +340,21 @@ The Screen Contract:
 - Do not over-specify. The Screen Contract constrains; it does not
   micromanage. Leave room for proposal models to make architectural
   and interaction design choices within the constraints.
-- Do not produce a document longer than ~3 pages per surface. If a
-  surface needs more than that, it's probably multiple surfaces that
-  should be split.
+- Do not produce a document longer than ~3 pages per surface,
+  INCLUDING the executive contract paragraph. If a surface needs more
+  than that, it's probably multiple surfaces that should be split.
+  The executive contract exists so that even if a downstream agent
+  only reads the first paragraph of each surface, they receive the
+  hard constraints.
 - Do not skip the anti-goals section. This is the most important
   section. If you can't name what the surface must NOT do, the
-  constraints aren't well-understood yet.
+  constraints aren't well-understood yet. Remember that anti-goals
+  split into emphasis (what must not dominate) and behavior (what
+  must not happen on interaction) — fill in BOTH groups.
+- Do not skip the surface-transitions / flow-invariants section.
+  Per-surface contracts miss bugs that live in the transitions
+  BETWEEN surfaces. The flow invariants section is where you catch
+  them.
 ```
 
 ---
