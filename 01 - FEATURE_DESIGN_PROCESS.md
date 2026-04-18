@@ -1,8 +1,8 @@
 # Feature Design Process Guide
 
-**Purpose:** End-to-end workflow for taking a feature idea from initial concept through implementation-ready epics and stories. This process codifies the adversarial multi-model design methodology used to develop Crossfire's Planning feature — the most successful feature design cycle in the project's history.
+**Purpose:** End-to-end workflow for taking a feature idea from initial concept through implementation-ready epics and stories. This process codifies the adversarial multi-model design methodology originally developed during the design of [LLM Crossfire](https://getcrossfire.net)'s Planning feature.
 
-**Who this is for:** The product owner (you) coordinating with LLMs to design, validate, and scope new Crossfire features.
+**Who this is for:** The product owner (you) coordinating with LLMs to design, validate, and scope new features.
 
 **What this produces:** A feature specification, implementation breakdown, and Principal Engineer prompt ready for multi-agent coding sessions.
 
@@ -410,7 +410,7 @@ Element 9 is unique to crossfire prompts. It tells each model that its response 
 | 14 | Spec-to-Epics Decomposition Prompt | `SPEC_TO_EPICS_PROMPT_TEMPLATE.md` | Single LLM | Step 15 |
 | 15 | Implementation PE Prompt | `IMPLEMENTATION_PE_PROMPT_TEMPLATE.md` | Single LLM (persistent) | Step 16 |
 
-All templates are located in `LLM Templates/Feature Design Templates/`.
+All templates are located in the root of this repository alongside this process guide.
 
 ---
 
