@@ -1,0 +1,32 @@
+{
+  "name": "feature-design-prompt-templates",
+  "owner": {
+    "name": "Chad Houghton",
+    "url": "https://github.com/choughton"
+  },
+  "plugins": [
+    {
+      "name": "fd",
+      "source": ".",
+      "description": "Adversarial-pressure feature design pipeline. Takes a raw idea through triage, exploration, problem statement, UI contract, verification, spec, epics, and PE setup. Stateful per-feature sessions. Includes model-runner skills for invoking Codex CLI, Gemini CLI, and Claude Code CLI from inside a Claude session.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Chad Houghton",
+        "url": "https://github.com/choughton"
+      },
+      "homepage": "https://github.com/choughton/feature-design-prompt-templates",
+      "license": "MIT",
+      "keywords": [
+        "feature-design",
+        "product",
+        "spec",
+        "triage",
+        "epic-breakdown",
+        "ui-contract",
+        "verification",
+        "crossfire",
+        "multi-model"
+      ]
+    }
+  ]
+}
