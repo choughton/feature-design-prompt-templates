@@ -4,11 +4,11 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:proposal-synthesis
+# /feature-design:proposal-synthesis
 
 Run the round-N synthesis stage. Wraps Template 09.
 
-This command is **re-runnable across iteration rounds**. On the first invocation, it synthesizes the initial proposals from `/fd:proposal-crossfire`. On subsequent invocations (after `/fd:proposal-iterate`), it synthesizes the iterative review responses into an updated reconciled design. State tracks which round we're on.
+This command is **re-runnable across iteration rounds**. On the first invocation, it synthesizes the initial proposals from `/feature-design:proposal-crossfire`. On subsequent invocations (after `/feature-design:proposal-iterate`), it synthesizes the iterative review responses into an updated reconciled design. State tracks which round we're on.
 
 ## Step 1 — Locate active session
 
@@ -36,13 +36,13 @@ For Round N (N≥2): source documents are `10a-round{N}-claude.md`, `10b-round{N
 
 ## Step 4 — Present and elicit rulings
 
-Read the round's responses in full. Identify convergent / divergent / solo-substantive items as in `/fd:problem-decision` Step 3. Present the digest to the user, ask for numbered rulings.
+Read the round's responses in full. Identify convergent / divergent / solo-substantive items as in `/feature-design:problem-decision` Step 3. Present the digest to the user, ask for numbered rulings.
 
 For Round 1, frame items as "proposal divergences" (the three proposals took different approaches; rule on which to adopt).
 
 For Round N≥2, frame items as "review findings" (the reviewers identified weaknesses in the reconciled design; rule on which to address).
 
-If the round is heavily convergent (reviewers largely agreed on minor improvements), tell the user explicitly — this is a signal that the design has converged and they may want to proceed to `/fd:proposal-final` rather than another iteration.
+If the round is heavily convergent (reviewers largely agreed on minor improvements), tell the user explicitly — this is a signal that the design has converged and they may want to proceed to `/feature-design:proposal-final` rather than another iteration.
 
 ## Step 5 — Substitute placeholders
 
@@ -78,7 +78,7 @@ Write to `.feature-design/<slug>/09-round{N}-synthesis.md`:
 **Source:** Template 09
 **Session:** <slug>
 **Round:** <N>
-**Status:** Reconciled. Pending decision: another round (/fd:proposal-iterate) or finalize (/fd:proposal-final).
+**Status:** Reconciled. Pending decision: another round (/feature-design:proposal-iterate) or finalize (/feature-design:proposal-final).
 <if this round was 2 of 3>
 **Note:** Round <N> crossfire captured 2 of 3 perspectives. <Missing model> did not respond. Reconciliation reflects the available reviews; downstream stages should account for the missing diversity-of-thought.
 </if>
@@ -101,20 +101,4 @@ Write to `.feature-design/<slug>/09-round{N}-synthesis.md`:
 }
 ```
 
-- Append `"proposal-synthesis-round-<N>"` to `completed_stages` (this lets `/fd:next` distinguish rounds)
-- Set `current_stage` to `"proposal-iterate-or-final"` — a virtual stage that `/fd:next` resolves to the user's choice. Don't auto-pick; the user decides whether to iterate or finalize.
-
-## Step 9 — Report
-
-```
-Round <N> synthesis complete → 09-round<N>-synthesis.md
-Settled decisions: <count> (cumulative across all rounds)
-Open questions: <count>
-Convergence signal: <strong | mixed | weak>
-
-You decide what's next:
-  /fd:proposal-iterate   — run another adversarial round on this reconciled design
-  /fd:proposal-final     — accept this design and proceed to verification
-
-If convergence is strong (reviewers largely agreed on minor improvements), iterating again may produce diminishing returns. If convergence is weak (significant disagreements remain), iterate.
-```
+- Append `"proposal-synthesis-round-<N>"` to `completed_stages` (this lets `/feature-design:next` dis

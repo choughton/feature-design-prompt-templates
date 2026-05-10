@@ -1,7 +1,6 @@
 {
-  "name": "fd",
-  "displayName": "Feature Design",
-  "version": "0.2.0",
+  "name": "feature-design",
+  "version": "0.3.0",
   "description": "Adversarial-pressure feature design pipeline. Takes a raw idea through triage, exploration, problem statement, UI contract, verification, spec, epics, and PE setup. Stateful per-feature sessions.",
   "author": {
     "name": "Chad Houghton",

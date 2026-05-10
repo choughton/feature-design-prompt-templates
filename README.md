@@ -19,47 +19,47 @@ The plugin runs the in-scope stages of the pipeline (everything except crossfire
 
 ### Install
 
-This repo is a self-contained plugin — install it as a local plugin in Claude Code or Cowork mode. Once installed, all commands are namespaced under `/fd:`.
+This repo is a self-contained plugin — install it as a local plugin in Claude Code or Cowork mode. Once installed, all commands are namespaced under `/feature-design:`.
 
 ### Quick start
 
 ```
-/fd:start <feature-name> -- <one-line idea>
-/fd:next      # walks the rest of the pipeline; hard-gates prerequisites
-/fd:status    # snapshot of the active session
+/feature-design:start <feature-name> -- <one-line idea>
+/feature-design:next      # walks the rest of the pipeline; hard-gates prerequisites
+/feature-design:status    # snapshot of the active session
 ```
 
 ### Pipeline (full)
 
 | Command | Wraps template | Output |
 |---|---|---|
-| `/fd:triage` | 02 | `01-triage.md` |
-| `/fd:explore` | 03 | `02-exploration.md` (interactive) |
-| `/fd:problem` | 04 | `03-problem-statement.md` |
-| `/fd:problem-crossfire` | 05 | `05a-claude.md`, `05b-codex.md`, `05c-gemini.md` |
-| `/fd:problem-decision` | 06 | `06-validated-problem.md`, `06-feature-proposal-source.md` |
-| `/fd:ui-draft` | 07 | `04-ui-contract.md` (user-facing only) |
-| `/fd:proposal-crossfire` | 08 | `08a-claude.md`, `08b-codex.md`, `08c-gemini.md` |
-| `/fd:proposal-synthesis` | 09 | `09-round{N}-synthesis.md` (re-runnable per round) |
-| `/fd:proposal-iterate` | 10 | `10a-round{N}-claude.md`, `10b-round{N}-codex.md`, `10c-round{N}-gemini.md` |
-| `/fd:proposal-final` | 11 | `11-final-design.md` (canonical design — locked) |
-| `/fd:verify` | 12 | `07-verification.md` |
-| `/fd:spec` | 13 | `08-spec.md` |
-| `/fd:epics` | 14 | `09-epics.md` |
-| `/fd:pe-setup` | 15 | `10-pe-prompt.md` |
+| `/feature-design:triage` | 02 | `01-triage.md` |
+| `/feature-design:explore` | 03 | `02-exploration.md` (interactive) |
+| `/feature-design:problem` | 04 | `03-problem-statement.md` |
+| `/feature-design:problem-crossfire` | 05 | `05a-claude.md`, `05b-codex.md`, `05c-gemini.md` |
+| `/feature-design:problem-decision` | 06 | `06-validated-problem.md`, `06-feature-proposal-source.md` |
+| `/feature-design:ui-draft` | 07 | `04-ui-contract.md` (user-facing only) |
+| `/feature-design:proposal-crossfire` | 08 | `08a-claude.md`, `08b-codex.md`, `08c-gemini.md` |
+| `/feature-design:proposal-synthesis` | 09 | `09-round{N}-synthesis.md` (re-runnable per round) |
+| `/feature-design:proposal-iterate` | 10 | `10a-round{N}-claude.md`, `10b-round{N}-codex.md`, `10c-round{N}-gemini.md` |
+| `/feature-design:proposal-final` | 11 | `11-final-design.md` (canonical design — locked) |
+| `/feature-design:verify` | 12 | `07-verification.md` |
+| `/feature-design:spec` | 13 | `08-spec.md` |
+| `/feature-design:epics` | 14 | `09-epics.md` |
+| `/feature-design:pe-setup` | 15 | `10-pe-prompt.md` |
 
 Sessions live in `.feature-design/<slug>/` in your working folder.
 
-The orchestrator (`/fd:next`) hard-gates progression — it refuses to advance if a prerequisite stage hasn't completed. Pass `--force` to override deliberately.
+The orchestrator (`/feature-design:next`) hard-gates progression — it refuses to advance if a prerequisite stage hasn't completed. Pass `--force` to override deliberately.
 
-**Crossfire iteration loop:** after `/fd:proposal-synthesis` completes, `/fd:next` stops and asks you to choose: another adversarial round (`/fd:proposal-iterate`, then `/fd:proposal-synthesis` again) or finalize (`/fd:proposal-final`). The convergence signal in the synthesis report tells you whether iterating again is likely worth the cost.
+**Crossfire iteration loop:** after `/feature-design:proposal-synthesis` completes, `/feature-design:next` stops and asks you to choose: another adversarial round (`/feature-design:proposal-iterate`, then `/feature-design:proposal-synthesis` again) or finalize (`/feature-design:proposal-final`). The convergence signal in the synthesis report tells you whether iterating again is likely worth the cost.
 
-**Crossfire dispatch — internal vs. external:** the three crossfire dispatch commands (`/fd:problem-crossfire`, `/fd:proposal-crossfire`, `/fd:proposal-iterate`) support two modes:
+**Crossfire dispatch — internal vs. external:** the three crossfire dispatch commands (`/feature-design:problem-crossfire`, `/feature-design:proposal-crossfire`, `/feature-design:proposal-iterate`) support two modes:
 
 - **Internal:** plugin invokes Claude (via `claude-cli` skill), Codex (via `codex` skill), Gemini (via `gemini` skill) sequentially from the project working directory. Default.
 - **External:** plugin saves the substituted crossfire prompt to disk and waits for you to run it through your own crossfire tool, then drops the three response files into the session folder. Useful if you have a dedicated crossfire system that does this better than three sequential CLI shellouts.
 
-Mode is set per-session at `/fd:start` time (`state.crossfire.dispatch_mode`) and can be overridden per-command with `--external` or `--internal`. Synthesis and decision commands (`/fd:problem-decision`, `/fd:proposal-synthesis`, `/fd:proposal-final`) work identically regardless of dispatch mode — they just read the response files from the session folder.
+Mode is set per-session at `/feature-design:start` time (`state.crossfire.dispatch_mode`) and can be overridden per-command with `--external` or `--internal`. Synthesis and decision commands (`/feature-design:problem-decision`, `/feature-design:proposal-synthesis`, `/feature-design:proposal-final`) work identically regardless of dispatch mode — they just read the response files from the session folder.
 
 **Crossfire reviewers read files from your repo.** Crossfire prompts reference files by relative path (`docs/PRD.md`, `.feature-design/<slug>/03-problem-statement.md`, etc.). The dispatched models read those files via their CLI's filesystem tools (Codex via `--sandbox read-only`, Gemini natively, Claude via `--allowed-tools "Read,Glob,Grep,WebFetch"`). Internal dispatch runs from the project working directory so paths resolve correctly. **The plugin does not inline file contents into prompts** — that would defeat the file-access affordance and reduce crossfire to "respond to whatever the moderator pasted."
 
@@ -99,10 +99,10 @@ The plugin declares a set of MCP servers in `.mcp.json` and uses `~~category` pl
 
 | Category | Placeholder | Bundled options | Used by |
 |---|---|---|---|
-| Project tracker | `~~project tracker` | Linear, Asana, Atlassian, Monday, ClickUp | `/fd:epics` (optional push), `/fd:status` (live issue states) |
-| Code repo | `~~code repo` | GitHub | `/fd:epics` (file-path grounding) |
+| Project tracker | `~~project tracker` | Linear, Asana, Atlassian, Monday, ClickUp | `/feature-design:epics` (optional push), `/feature-design:status` (live issue states) |
+| Code repo | `~~code repo` | GitHub | `/feature-design:epics` (file-path grounding) |
 | Knowledge base | `~~knowledge base` | Notion | Optional supplementary doc lookups |
-| Drive / file store | `~~drive` | Google Drive (user-installed) | Optional — `/fd:explore`, `/fd:problem` for customer feedback / samples |
+| Drive / file store | `~~drive` | Google Drive (user-installed) | Optional — `/feature-design:explore`, `/feature-design:problem` for customer feedback / samples |
 
 Authenticate connectors via `/mcp` after the plugin is enabled. You only need to authenticate the ones you actually use. See [`CONNECTORS.md`](./CONNECTORS.md) for the full per-command behavior.
 
@@ -223,93 +223,4 @@ This process only works if the human makes explicit rulings.
 There are two core decision checkpoints:
 
 - **Checkpoint #1:** after problem-statement crossfire
-- **Checkpoint #2:** after feature-proposal crossfire
-
-At each checkpoint, the LLMs generate a decision surface. You decide scope boundaries, contested design choices, architecture tradeoffs, deferred items, and mutual exclusions. The synthesis prompts then encode your rulings into downstream artifacts.
-
-Recommended ruling format:
-
-```text
-1. [Contested item]
-   Ruling: [Your decision]
-   Rationale: [Why]
-```
-
-If you skip the rulings, the downstream spec and implementation breakdown will inherit ambiguity.
-
-## Output Artifacts
-
-If you run the full workflow, the repo should produce:
-
-- a triage outcome and recommended entry point
-- an explored and synthesized problem statement
-- three independent crossfire reviews of the problem
-- a validated problem statement plus feature-proposal source document
-- a **Screen Contract** for user-facing work
-- three independent feature proposals
-- a reconciled feature design, optionally across multiple rounds
-- an independent verification report
-- a feature specification
-- an implementation breakdown with epics, stories, acceptance criteria, and dependencies
-- a persistent Principal Engineer prompt for multi-agent coding sessions
-
-## Template Families
-
-| Range | Role |
-|---|---|
-| `01` | Process guide / operating instructions |
-| `02-06` | Discovery, problem framing, and problem-level crossfire |
-| `07` | UI Drafting Brief / Screen Contract for user-facing features |
-| `08-12` | Proposal crossfire, iterative refinement, final synthesis, and verification |
-| `13-15` | Implementation handoff: spec, epics, and PE setup |
-
-## Template Index
-
-| # | File | Type |
-|---|---|---|
-| 01 | [`01 - FEATURE_DESIGN_PROCESS.md`](./01%20-%20FEATURE_DESIGN_PROCESS.md) | Reference doc |
-| 02 | [`02 - TRIAGE_PROMPT.md`](./02%20-%20TRIAGE_PROMPT.md) | Single LLM |
-| 03 | [`03 - IDEA_EXPLORATION_PROMPT.md`](./03%20-%20IDEA_EXPLORATION_PROMPT.md) | Single LLM (interactive) |
-| 04 | [`04 - PROBLEM_STATEMENT_SYNTHESIS_PROMPT.md`](./04%20-%20PROBLEM_STATEMENT_SYNTHESIS_PROMPT.md) | Single LLM |
-| 05 | [`05 - PROBLEM_STATEMENT_CROSSFIRE_PROMPT.md`](./05%20-%20PROBLEM_STATEMENT_CROSSFIRE_PROMPT.md) | Crossfire (×3 LLMs) |
-| 06 | [`06 - PROBLEM_STATEMENT_DECISION_SYNTHESIS_PROMPT.md`](./06%20-%20PROBLEM_STATEMENT_DECISION_SYNTHESIS_PROMPT.md) | Single LLM |
-| 07 | [`07 - UI_DRAFTING_BRIEF_PROMPT.md`](./07%20-%20UI_DRAFTING_BRIEF_PROMPT.md) | Single LLM |
-| 08 | [`08 - FEATURE_PROPOSAL_CROSSFIRE_PROMPT.md`](./08%20-%20FEATURE_PROPOSAL_CROSSFIRE_PROMPT.md) | Crossfire (×3 LLMs) |
-| 09 | [`09 - FEATURE_PROPOSAL_ROUND_N_SYNTHESIS_PROMPT.md`](./09%20-%20FEATURE_PROPOSAL_ROUND_N_SYNTHESIS_PROMPT.md) | Single LLM |
-| 10 | [`10 - FEATURE_PROPOSAL_ROUND_N_PLUS_1_CROSSFIRE_PROMPT.md`](./10%20-%20FEATURE_PROPOSAL_ROUND_N_PLUS_1_CROSSFIRE_PROMPT.md) | Crossfire (×3 LLMs) |
-| 11 | [`11 - FEATURE_PROPOSAL_DECISION_SYNTHESIS_PROMPT.md`](./11%20-%20FEATURE_PROPOSAL_DECISION_SYNTHESIS_PROMPT.md) | Single LLM |
-| 12 | [`12 - VERIFICATION_PROMPT.md`](./12%20-%20VERIFICATION_PROMPT.md) | Single LLM |
-| 13 | [`13 - SYNTHESIS_TO_SPEC_PROMPT_TEMPLATE.md`](./13%20-%20SYNTHESIS_TO_SPEC_PROMPT_TEMPLATE.md) | Single LLM |
-| 14 | [`14 - SPEC_TO_EPICS_PROMPT_TEMPLATE.md`](./14%20-%20SPEC_TO_EPICS_PROMPT_TEMPLATE.md) | Single LLM |
-| 15 | [`15 - IMPLEMENTATION_PE_PROMPT_TEMPLATE.md`](./15%20-%20IMPLEMENTATION_PE_PROMPT_TEMPLATE.md) | Single LLM (persistent) |
-
-## Key Concepts
-
-**Crossfire rounds** send the same source document to three independent LLMs that cannot see one another's responses. Convergence increases confidence. Divergence surfaces the tradeoffs that need a human ruling.
-
-**Screen Contract** (Document 7) is a governing artifact for user-facing features. It defines what each surface must do, what dominates, what must stay quiet, required states, and anti-goals. Backend-only or invisible infrastructure work should skip this step.
-
-**Iterative crossfire** (Documents 9 and 10) allows repeated pressure-testing of the reconciled design. The posture changes from "propose from scratch" to "improve this." Settled decisions accumulate and are not reopened unless the human explicitly changes them.
-
-**Universal prompt skeleton** structures every template to ensure rigorous, predictable outputs. The core elements are:
-1. **Role:** The persona the LLM must adopt.
-2. **Task:** The specific action required in this round.
-3. **Inputs:** The artifacts provided for context.
-4. **Assumptions:** Ground truths the LLM must not challenge.
-5. **Validity Preconditions:** Checks the LLM must perform before answering.
-6. **Dimensions:** The specific angles to analyze (e.g., UX, Edge Cases).
-7. **Outcome Criteria:** What a successful output looks like.
-8. **Constraints:** Hard boundaries the LLM must not cross.
-9. **Synthesis Objective:** (For Crossfire prompts only) Instructions on how to disagree constructively.
-
-## Origins
-
-This repository grew out of a simple idea: **the way you frame AI changes the quality of thinking you get back.**
-
-It started as a frustration. Default AI assistants are often optimized to feel helpful rather than to think sharply. To fix that, I created the **[LLM Directive Framework](https://github.com/choughton/llm-directive-framework)** — a set of personal instructions designed to pull more rigorous, challenging behavior out of models like Claude, ChatGPT, and Gemini. Those directives didn't just change the tone of the interaction; they actively accelerated the design, specification, and build process by keeping the focus on clarity and reducing "flattery noise."
-
-This repository is the next step in the same philosophy. Once you have multiple strong model opinions, the challenge is no longer generation — it's reconciliation. Three different analyses don't automatically create clarity; without structure, they create a new judgment problem. The feature design process outlined in these templates is built to impose that structure, turning multi-model disagreement into a cleaner surface for human decision-making. The goal isn't a nicer AI — it's a sharper one.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- **Checkpoint #2:** after feature-p

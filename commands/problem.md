@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:problem
+# /feature-design:problem
 
 Run the problem-statement synthesis stage. Wraps Template 04.
 
@@ -73,7 +73,6 @@ Problem statement complete → 03-problem-statement.md
 Length: <line count> lines
 Challenge questions: <count>
 
-Recommended next: /fd:next  (will run /fd:<next-stage>)
+Recommended next: /feature-design:next  (will run /feature-design:<next-stage>)
 
-Note: Crossfire review (Templates 05, 06) is deferred. The downstream pipeline will treat this draft as if it had passed crossfire. When crossfire support is added later, you can re-enter the pipeline here.
-```
+Note: Crossfire review (Templates 05, 06) is deferred. The downstream pipeline will treat this draft as i

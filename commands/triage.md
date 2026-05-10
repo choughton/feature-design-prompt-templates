@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:triage
+# /feature-design:triage
 
 Run the triage stage on the active feature-design session. Wraps Template 02.
 
@@ -12,7 +12,7 @@ Run the triage stage on the active feature-design session. Wraps Template 02.
 
 Read `.feature-design/CURRENT` from cwd to get `<slug>`. Read `.feature-design/<slug>/state.json`.
 
-If no session is active, tell the user to run `/fd:start <feature-name>` first. Stop.
+If no session is active, tell the user to run `/feature-design:start <feature-name>` first. Stop.
 
 ## Step 2 — Load inputs
 
@@ -80,10 +80,10 @@ Print:
 ```
 Triage complete → 01-triage.md
 Entry point: <entry_point>
-Recommended next: /fd:next  (will run /fd:<next-stage>)
+Recommended next: /feature-design:next  (will run /feature-design:<next-stage>)
 
 Conflicts: <count>
 Open questions: <count>
 ```
 
-If conflicts were flagged as hard stops, recommend the user resolve them before proceeding regardless of `/fd:next`.
+If conflicts were flagged as hard stops, recommend the user resolve 

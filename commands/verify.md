@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:verify
+# /feature-design:verify
 
 Run the verification stage. Wraps Template 12.
 
@@ -83,7 +83,7 @@ Warnings: <count>
 Notes: <count>
 Clean dimensions: <list>
 
-Recommended next: /fd:next  (will run /fd:spec)
+Recommended next: /feature-design:next  (will run /feature-design:spec)
 ```
 
-If any blockers were found, recommend the user resolve them in the upstream artifacts before proceeding to spec.
+If any blo

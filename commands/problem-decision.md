@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:problem-decision
+# /feature-design:problem-decision
 
 Run the problem-statement decision synthesis stage. Wraps Template 06.
 
@@ -73,7 +73,7 @@ Following the template's `## 6. Dimensions` and `## 7. Outcome Criteria`, produc
 
 **Output A: Validated Problem Statement** — an updated version of `03-problem-statement.md` incorporating accepted corrections.
 
-**Output B: Feature Proposal Prompt** — a source document for `/fd:proposal-crossfire`. Must include:
+**Output B: Feature Proposal Prompt** — a source document for `/feature-design:proposal-crossfire`. Must include:
 - Problem summary (3-5 sentences)
 - Settled decisions (cumulative — these are final)
 - Constraints (technical, architectural, design)
@@ -97,45 +97,4 @@ Write Output A to `.feature-design/<slug>/06-validated-problem.md`:
 **Session:** <slug>
 **Status:** Validated post-crossfire. Incorporates accepted corrections from 05a/b/c reviews and product owner rulings.
 <if partial>
-**Note:** This synthesis was produced from 2 of 3 crossfire perspectives. <Missing model> did not respond during dispatch. Convergence interpretation should account for the missing diversity-of-thought.
-</if>
-
----
-
-<validated problem statement body>
-```
-
-Write Output B to `.feature-design/<slug>/06-feature-proposal-source.md`:
-
-```markdown
-# Feature Proposal Source Document: <feature_name>
-
-**Date:** <ISO date>
-**Source:** Template 06 — Output B
-**Session:** <slug>
-**Status:** Source document for /fd:proposal-crossfire. Sent verbatim to three independent models.
-**UI drafting applicability:** <Required | Not applicable>
-
----
-
-<feature proposal source body>
-```
-
-## Step 7 — Update state
-
-- Append `"problem-decision"` to `completed_stages`
-- Set `current_stage` to `"ui-draft"` if Output B's UI applicability is `Required`, else `"proposal-crossfire"`
-- Update `state.user_facing` based on the UI applicability flag if it was `null`
-- Save the rulings in state.json under `crossfire.problem_round.rulings` for downstream reference and audit trail
-
-## Step 8 — Report
-
-```
-Validated problem statement → 06-validated-problem.md
-Feature proposal source     → 06-feature-proposal-source.md
-Settled decisions: <count>
-Deferred items: <count>
-UI drafting: <Required | Not applicable>
-
-Recommended next: /fd:next  (will run /fd:<next-stage>)
-```
+**Note:** This synthesis was produced from 2 of 3 crossfire 

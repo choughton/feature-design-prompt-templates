@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:pe-setup
+# /feature-design:pe-setup
 
 Run the implementation PE setup stage. Wraps Template 15.
 
@@ -88,7 +88,4 @@ Session complete. Pipeline summary:
   ✓ Verification        07-verification.md
   ✓ Spec                08-spec.md
   ✓ Epics breakdown     09-epics.md
-  ✓ PE prompt           10-pe-prompt.md
-
-Next step is outside the plugin: paste 10-pe-prompt.md into a fresh persistent chat (Chat G) and begin implementation.
-```
+  ✓ PE prompt           10-pe-promp

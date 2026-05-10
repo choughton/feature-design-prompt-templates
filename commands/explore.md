@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:explore
+# /feature-design:explore
 
 Run the idea-exploration stage. Wraps Template 03. Unlike other stages, this is **interactive** — you're having a conversation, not generating a one-shot document.
 
@@ -42,13 +42,13 @@ Open the conversation by acknowledging the feature idea and the triage findings 
 
 When the conversation has produced enough signal (per `## 7. Outcome Criteria` in the template — the problem is articulable distinct from any solution, who/when/cost/constraints/open-questions are clear), suggest moving to problem statement synthesis. Ask explicitly:
 
-> "I think we have enough to draft a problem statement. Want me to proceed to `/fd:problem`, or keep exploring?"
+> "I think we have enough to draft a problem statement. Want me to proceed to `/feature-design:problem`, or keep exploring?"
 
 The transition is **always user-gated**. Do not proceed automatically.
 
 ## Step 6 — Write transcript
 
-When the user agrees to move forward (or runs `/fd:problem` directly), write the conversation transcript to `.feature-design/<slug>/02-exploration.md` with this header:
+When the user agrees to move forward (or runs `/feature-design:problem` directly), write the conversation transcript to `.feature-design/<slug>/02-exploration.md` with this header:
 
 ```markdown
 # Idea Exploration: <feature_name>
@@ -70,6 +70,4 @@ When the user agrees to move forward (or runs `/fd:problem` directly), write the
 ## Step 8 — Report
 
 ```
-Exploration complete → 02-exploration.md
-Recommended next: /fd:next  (will run /fd:problem)
-```
+Exp

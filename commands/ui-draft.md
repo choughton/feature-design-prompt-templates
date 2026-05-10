@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:ui-draft
+# /feature-design:ui-draft
 
 Run the UI Drafting Brief / Screen Contract stage. Wraps Template 07.
 
@@ -12,7 +12,7 @@ Run the UI Drafting Brief / Screen Contract stage. Wraps Template 07.
 
 Read `.feature-design/CURRENT` and state.json.
 
-If `state.user_facing === false`, refuse and tell the user this stage doesn't apply. Suggest `/fd:next` to skip directly to verify. Stop.
+If `state.user_facing === false`, refuse and tell the user this stage doesn't apply. Suggest `/feature-design:next` to skip directly to verify. Stop.
 
 If `state.user_facing === null`, ask the user to confirm whether this feature has a UI surface before proceeding.
 
@@ -85,8 +85,4 @@ Write to `.feature-design/<slug>/04-ui-contract.md` with this header:
 ```
 Screen Contract complete → 04-ui-contract.md
 Surfaces covered: <count>
-Hard constraints: <count>
-Soft guidance items: <count>
-
-Recommended next: /fd:next  (will run /fd:verify)
-```
+Ha

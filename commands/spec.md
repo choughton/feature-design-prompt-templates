@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:spec
+# /feature-design:spec
 
 Run the spec generation stage. Wraps Template 13.
 
@@ -71,9 +71,3 @@ Write to `.feature-design/<slug>/08-spec.md` with the document header from the t
 
 ```
 Spec complete → 08-spec.md
-Sections produced: <list>
-Open questions: <count>
-Deferred items: <count>
-
-Recommended next: /fd:next  (will run /fd:epics)
-```

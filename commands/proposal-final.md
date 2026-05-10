@@ -1,14 +1,14 @@
 ---
-description: Lock in the final reconciled design from the crossfire pipeline. Produces the canonical design artifact consumed by /fd:verify, /fd:spec, /fd:epics.
+description: Lock in the final reconciled design from the crossfire pipeline. Produces the canonical design artifact consumed by /feature-design:verify, /feature-design:spec, /feature-design:epics.
 argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:proposal-final
+# /feature-design:proposal-final
 
 Run the final decision synthesis stage. Wraps Template 11.
 
-This produces the **canonical final design** — the single artifact that downstream stages (verify / spec / epics / pe-setup) consume. After this, the crossfire pipeline is closed and the design cannot be reopened without restarting from `/fd:proposal-iterate`.
+This produces the **canonical final design** — the single artifact that downstream stages (verify / spec / epics / pe-setup) consume. After this, the crossfire pipeline is closed and the design cannot be reopened without restarting from `/feature-design:proposal-iterate`.
 
 The template operates in two modes:
 
@@ -17,7 +17,7 @@ The template operates in two modes:
 
 ## Step 1 — Locate active session
 
-Read `.feature-design/CURRENT` and state.json. Prerequisite: most recent stage is `proposal-synthesis-round-<N>` for some N (Mode A) OR `proposal-crossfire` directly with the user invoking `/fd:proposal-final` instead of `/fd:proposal-synthesis` (Mode B — must pass `--mode single` explicitly to indicate intent).
+Read `.feature-design/CURRENT` and state.json. Prerequisite: most recent stage is `proposal-synthesis-round-<N>` for some N (Mode A) OR `proposal-crossfire` directly with the user invoking `/feature-design:proposal-final` instead of `/feature-design:proposal-synthesis` (Mode B — must pass `--mode single` explicitly to indicate intent).
 
 For Mode A (default): refuse unless a `proposal-synthesis-round-<N>` is the most recent stage.
 
@@ -45,7 +45,7 @@ For both modes:
 
 Mode A: ask if the user has any final corrections or overrides to apply. If they say "no," proceed with the existing reconciled design as-is.
 
-Mode B: present the three proposals and elicit numbered rulings as in `/fd:problem-decision` Step 3.
+Mode B: present the three proposals and elicit numbered rulings as in `/feature-design:problem-decision` Step 3.
 
 ## Step 4 — Substitute placeholders
 
@@ -88,7 +88,7 @@ Write to `.feature-design/<slug>/11-final-design.md`:
 **Source:** Template 11 — Mode <A | B>
 **Session:** <slug>
 **Total crossfire rounds:** <N>
-**Status:** Final. Locked. Consumed by /fd:verify, /fd:spec, /fd:epics, /fd:pe-setup.
+**Status:** Final. Locked. Consumed by /feature-design:verify, /feature-design:spec, /feature-design:epics, /feature-design:pe-setup.
 <if any round was partial>
 **Note:** This design incorporates rounds where crossfire captured 2 of 3 perspectives: <list of partial rounds with which model was missing each time>. The final design reflects available reviews; verification (Document 12) should pay particular attention to the dimensions where the missing model would have had the strongest signal.
 </if>
@@ -112,10 +112,4 @@ Final design locked → 11-final-design.md
 Mode: <Post-iteration | Single-round>
 Total rounds: <N>
 Settled decisions: <count>
-Deferred items: <count>
-Open questions for verification: <count>
-
-Recommended next: /fd:next  (will run /fd:verify)
-
-The crossfire pipeline is closed. To reopen, you'd need to restart from /fd:proposal-iterate or scrap the session.
-```
+Deferred it

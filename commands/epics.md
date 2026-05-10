@@ -4,7 +4,7 @@ argument-hint: (uses active session)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# /fd:epics
+# /feature-design:epics
 
 Run the spec-to-epics decomposition stage. Wraps Template 14.
 
@@ -85,45 +85,4 @@ Write to `.feature-design/<slug>/09-epics.md` with this header:
 
 ## Step 8 — Optional: push to project tracker
 
-If `state.connectors.project_tracker.enabled === true`, offer to push the breakdown to the user's project tracker. Use the `~~project tracker` placeholder — at runtime this resolves to whichever tracker MCP the user has authenticated (Linear is the primary case, but Asana / Atlassian / Monday / ClickUp also work).
-
-Confirm with the user before pushing — this creates external state that's not easy to roll back. Ask:
-
-> Push these <N> epics and <M> stories to <tracker>? This will create issues in your tracker.
-
-If yes:
-
-1. For each **epic**: create a parent issue in the project tracker. Title = epic name. Description = epic boundary statement + brief summary of stories under this epic.
-2. For each **story**: create a child issue under its epic. Title = story title (e.g. "E1-S1: Add user-creation endpoint"). Description = the story's implementation instruction + acceptance criteria as a markdown list. Add `cross-story-dependencies` content to description if present.
-3. **Labels**: tag each story issue with each invariant (`INV-1`, `INV-2`, etc.) it must preserve, so invariant coverage is queryable in the tracker.
-4. **Capture the issue IDs**: as each issue is created, record its tracker ID (e.g. Linear's `ABC-123`) in `state.connectors.project_tracker.linked_issues` keyed by the epic/story identifier:
-
-```json
-"linked_issues": {
-  "E1": "ABC-100",
-  "E1-S1": "ABC-101",
-  "E1-S2": "ABC-102",
-  "E2": "ABC-103",
-  "E2-S1": "ABC-104"
-}
-```
-
-5. Save state.json after the push completes.
-
-If the user declines the push, skip this step entirely — `09-epics.md` remains the canonical breakdown and nothing else changes.
-
-If `state.connectors.project_tracker.enabled === false`, skip this step silently — don't ask. The user opted out at `/fd:start` time, and prompting them now would be noise.
-
-## Step 9 — Report
-
-```
-Implementation breakdown complete → 09-epics.md
-Epics: <count>
-Stories: <count>
-Invariants: <count>
-Critical path: <chain>
-Phases: <count>
-<if pushed:> Tracker issues created: <count> (visible via /fd:status)
-
-Recommended next: /fd:next  (will run /fd:pe-setup)
-```
+If `state.connectors.project_tracker.enabled === t
