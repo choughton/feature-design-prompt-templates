@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "fd",
-      "source": ".",
+      "source": "./",
       "description": "Adversarial-pressure feature design pipeline. Takes a raw idea through triage, exploration, problem statement, UI contract, verification, spec, epics, and PE setup. Stateful per-feature sessions. Includes model-runner skills for invoking Codex CLI, Gemini CLI, and Claude Code CLI from inside a Claude session.",
       "version": "0.1.0",
       "author": {
