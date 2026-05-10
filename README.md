@@ -29,22 +29,55 @@ This repo is a self-contained plugin — install it as a local plugin in Claude 
 /fd:status    # snapshot of the active session
 ```
 
-### Pipeline (v1, no crossfire)
+### Pipeline (full)
 
 | Command | Wraps template | Output |
 |---|---|---|
 | `/fd:triage` | 02 | `01-triage.md` |
 | `/fd:explore` | 03 | `02-exploration.md` (interactive) |
 | `/fd:problem` | 04 | `03-problem-statement.md` |
+| `/fd:problem-crossfire` | 05 | `05a-claude.md`, `05b-codex.md`, `05c-gemini.md` |
+| `/fd:problem-decision` | 06 | `06-validated-problem.md`, `06-feature-proposal-source.md` |
 | `/fd:ui-draft` | 07 | `04-ui-contract.md` (user-facing only) |
+| `/fd:proposal-crossfire` | 08 | `08a-claude.md`, `08b-codex.md`, `08c-gemini.md` |
+| `/fd:proposal-synthesis` | 09 | `09-round{N}-synthesis.md` (re-runnable per round) |
+| `/fd:proposal-iterate` | 10 | `10a-round{N}-claude.md`, `10b-round{N}-codex.md`, `10c-round{N}-gemini.md` |
+| `/fd:proposal-final` | 11 | `11-final-design.md` (canonical design — locked) |
 | `/fd:verify` | 12 | `07-verification.md` |
 | `/fd:spec` | 13 | `08-spec.md` |
 | `/fd:epics` | 14 | `09-epics.md` |
 | `/fd:pe-setup` | 15 | `10-pe-prompt.md` |
 
-Sessions live in `.feature-design/<slug>/` in your working folder. The numbering gaps at `05`, `06` are reserved for crossfire artifacts when that support lands.
+Sessions live in `.feature-design/<slug>/` in your working folder.
 
 The orchestrator (`/fd:next`) hard-gates progression — it refuses to advance if a prerequisite stage hasn't completed. Pass `--force` to override deliberately.
+
+**Crossfire iteration loop:** after `/fd:proposal-synthesis` completes, `/fd:next` stops and asks you to choose: another adversarial round (`/fd:proposal-iterate`, then `/fd:proposal-synthesis` again) or finalize (`/fd:proposal-final`). The convergence signal in the synthesis report tells you whether iterating again is likely worth the cost.
+
+**Crossfire dispatch — internal vs. external:** the three crossfire dispatch commands (`/fd:problem-crossfire`, `/fd:proposal-crossfire`, `/fd:proposal-iterate`) support two modes:
+
+- **Internal:** plugin invokes Claude (via `claude-cli` skill), Codex (via `codex` skill), Gemini (via `gemini` skill) sequentially from the project working directory. Default.
+- **External:** plugin saves the substituted crossfire prompt to disk and waits for you to run it through your own crossfire tool, then drops the three response files into the session folder. Useful if you have a dedicated crossfire system that does this better than three sequential CLI shellouts.
+
+Mode is set per-session at `/fd:start` time (`state.crossfire.dispatch_mode`) and can be overridden per-command with `--external` or `--internal`. Synthesis and decision commands (`/fd:problem-decision`, `/fd:proposal-synthesis`, `/fd:proposal-final`) work identically regardless of dispatch mode — they just read the response files from the session folder.
+
+**Crossfire reviewers read files from your repo.** Crossfire prompts reference files by relative path (`docs/PRD.md`, `.feature-design/<slug>/03-problem-statement.md`, etc.). The dispatched models read those files via their CLI's filesystem tools (Codex via `--sandbox read-only`, Gemini natively, Claude via `--allowed-tools "Read,Glob,Grep,WebFetch"`). Internal dispatch runs from the project working directory so paths resolve correctly. **The plugin does not inline file contents into prompts** — that would defeat the file-access affordance and reduce crossfire to "respond to whatever the moderator pasted."
+
+**Crossfire response threshold.** Crossfire's signal comes primarily from convergence between independent perspectives. Empirically, two independent reviewers capture roughly 90% of the convergence signal; the third reviewer's value is diversity of thought (different training corpora, different reasoning style) rather than statistical reliability. So the policy isn't strict 3/3 — it's:
+
+- **3/3 succeeded** → proceed normally.
+- **2/3 succeeded** → dispatch command stops and prompts the user. Choices: retry the failed model, run it externally (the prompt is saved to `.crossfire-prompts/<stage>.md`), or proceed with 2/3 acknowledging the diversity tradeoff. Pass `--allow-partial` to skip the prompt and proceed silently. The synthesis output gets a "produced from 2 of 3" annotation that flows downstream.
+- **1/3 succeeded** → hard fail. Single-perspective review isn't crossfire — there's nothing for synthesis to converge against.
+- **0/3 succeeded** → hard fail. Suggests switching to `--external` for the stage.
+
+When a model fails, the plugin writes a retry stub to that response file containing the prompt path and the list of files the reviewer needs to read. The user can fix the failure and re-dispatch, or run that one model manually and overwrite the stub.
+
+**External dispatch supports two response shapes.** When you run crossfire externally and bring responses back, the plugin accepts either:
+
+- **Three separate files**, one per model, matching the `<NN>[abc]-*.md` pattern (e.g., `05a-claude.md`, `05b-codex.md`, `05c-gemini.md`).
+- **A single combined file** containing all responses, matching `<NN>-*.md` without the `a/b/c` letter suffix (e.g., `05-crossfire.md`). Useful when your crossfire tool produces one output document. The plugin asks how many perspectives the file contains and applies the same threshold policy.
+
+Synthesis stages handle either shape. The plugin doesn't care where the responses came from — only that the threshold is met.
 
 ### Multi-model skills
 
@@ -60,9 +93,21 @@ Each skill checks whether its CLI is installed before calling, fails fast with a
 
 The moderator (Cowork Claude) doesn't participate in crossfire reviews itself — that would contaminate the adversarial signal. It coordinates and synthesizes. The three skills give it the three independent perspectives crossfire requires.
 
-### What's deferred
+### Connectors
 
-Crossfire and decision-synthesis stages (Templates 05, 06, 08, 09, 10, 11) are not yet wired into slash commands. The skills are in place to support them when they land. Use the standalone templates directly if you want to run crossfire manually in the meantime.
+The plugin declares a set of MCP servers in `.mcp.json` and uses `~~category` placeholders in command files (the same pattern Anthropic's productivity plugin uses) so it works with whatever connectors you have authenticated.
+
+| Category | Placeholder | Bundled options | Used by |
+|---|---|---|---|
+| Project tracker | `~~project tracker` | Linear, Asana, Atlassian, Monday, ClickUp | `/fd:epics` (optional push), `/fd:status` (live issue states) |
+| Code repo | `~~code repo` | GitHub | `/fd:epics` (file-path grounding) |
+| Knowledge base | `~~knowledge base` | Notion | Optional supplementary doc lookups |
+| Drive / file store | `~~drive` | Google Drive (user-installed) | Optional — `/fd:explore`, `/fd:problem` for customer feedback / samples |
+
+Authenticate connectors via `/mcp` after the plugin is enabled. You only need to authenticate the ones you actually use. See [`CONNECTORS.md`](./CONNECTORS.md) for the full per-command behavior.
+
+**Note on Google Drive:** there's no canonical Anthropic-hosted Drive MCP server, so this plugin doesn't bundle one. If you have a Drive connector installed via Cowork or another path, the `~~drive` placeholder will resolve to it. If not, commands fall back to local-files-only behavior.
+
 
 ## What This Is Not
 

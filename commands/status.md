@@ -63,3 +63,29 @@ If `current_stage === "complete"`, replace the recommended-next line with:
 ```
 Session complete. Implementation breakdown is in 09-epics.md and the PE prompt is in 10-pe-prompt.md.
 ```
+
+## Step 5 — Optional: project tracker integration
+
+If `state.connectors.project_tracker.enabled === true` AND `state.connectors.project_tracker.linked_issues` is non-empty (i.e., `/fd:epics` previously pushed to the tracker), additionally show live issue states for each linked story.
+
+Use the `~~project tracker` placeholder — at runtime Claude resolves it to the user's authenticated tracker MCP (Linear, Asana, Atlassian, Monday, or ClickUp).
+
+For each linked epic and story, query the tracker for the issue's current status. Render as a table beneath the pipeline summary:
+
+```
+Linked tracker issues (<tracker name>):
+  E1   ABC-100  In Progress  (3/5 stories done)
+  E1-S1   ABC-101  Done
+  E1-S2   ABC-102  In Review
+  E1-S3   ABC-103  Todo
+  E2   ABC-104  Todo  (0/2 stories done)
+  ...
+```
+
+If the tracker query fails (auth expired, network error, MCP not authenticated), print a single warning line and continue — don't block the rest of the status output:
+
+```
+Note: could not reach <tracker name> to query issue states. Run /mcp to re-authenticate if needed.
+```
+
+If `state.connectors.project_tracker.enabled === false` or `linked_issues` is empty, skip this step silently.
