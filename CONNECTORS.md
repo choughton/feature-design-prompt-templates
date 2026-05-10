@@ -15,7 +15,7 @@ If multiple options in a category are authenticated, Claude picks based on conte
 | Category | Placeholder | Bundled options | Used by |
 |---|---|---|---|
 | Project tracker | `~~project tracker` | Linear (primary), Asana, Atlassian, Monday, ClickUp | `/fd:epics`, `/fd:status` |
-| Code repo | `~~code repo` | GitHub | `/fd:epics` (file-path grounding), `/fd:start` (repo metadata) |
+| Code repo | `~~code repo` | GitHub (via Cowork's built-in GitHub connector — not bundled in this plugin's `.mcp.json`) | `/fd:epics` (file-path grounding), `/fd:start` (repo metadata) |
 | Knowledge base | `~~knowledge base` | Notion | Optional — `/fd:start`, `/fd:problem`, `/fd:explore` for supplementary docs (Confluence/Coda also work if installed separately) |
 | Drive / file store | `~~drive` | Google Drive (user-installed; not bundled) | Optional — `/fd:explore`, `/fd:problem` for customer feedback, samples, supplementary materials |
 
@@ -24,6 +24,7 @@ If multiple options in a category are authenticated, Claude picks based on conte
 ## What this plugin does NOT bundle
 
 - **Google Drive MCP** — there's no canonical Anthropic-hosted Drive MCP server. The community one (`@modelcontextprotocol/server-gdrive`) is in the archived servers repo. If you have a Drive connector configured in Cowork (or installed manually), the `~~drive` placeholder will resolve to it. If not, commands fall back to local-files-only behavior.
+- **GitHub MCP** — Cowork ships a built-in GitHub connector that handles GitHub access more cleanly than a plugin-declared MCP would. We don't redeclare it in this plugin's `.mcp.json` to avoid duplicate registration. The `~~code repo` placeholder resolves to whatever GitHub setup you have configured in Cowork.
 
 ## Per-command behavior
 
