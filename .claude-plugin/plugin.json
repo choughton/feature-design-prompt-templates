@@ -1,0 +1,21 @@
+{
+  "name": "fd",
+  "version": "0.1.0",
+  "description": "Adversarial-pressure feature design pipeline. Takes a raw idea through triage, exploration, problem statement, UI contract, verification, spec, epics, and PE setup. Stateful per-feature sessions.",
+  "author": {
+    "name": "Chad Houghton",
+    "url": "https://github.com/choughton"
+  },
+  "homepage": "https://github.com/choughton/feature-design-prompt-templates",
+  "repository": "https://github.com/choughton/feature-design-prompt-templates",
+  "license": "MIT",
+  "keywords": [
+    "feature-design",
+    "product",
+    "spec",
+    "triage",
+    "epic-breakdown",
+    "ui-contract",
+    "verification"
+  ]
+}

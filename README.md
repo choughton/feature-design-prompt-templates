@@ -6,12 +6,63 @@ A structured, adversarial multi-model workflow for taking a feature from a raw i
 
 ## What This Repo Contains
 
-This repo contains **15 numbered documents**:
+This repo is **both** a set of standalone prompt templates **and** a Claude plugin that wraps them into slash commands.
 
-- **1 process guide** that explains the workflow, shortcut paths, chat/session boundaries, and decision checkpoints
-- **14 prompt templates** that execute the workflow across discovery, adversarial review, synthesis, verification, spec generation, and implementation setup
+- **15 numbered prompt templates** — usable independently in any LLM. One process guide plus fourteen prompts covering discovery, adversarial review, synthesis, verification, spec generation, and implementation setup.
+- **A Claude plugin (`fd`)** — slash commands and a discovery skill that automate triage, exploration, problem statement, UI contract, verification, spec, epics, and PE setup. State is tracked per-feature in a session folder.
 
 The method is best suited to products that already have canonical source docs, a human decision-maker who will make explicit rulings, and a willingness to run multiple independent LLM sessions in parallel.
+
+## Use As a Claude Plugin
+
+The plugin runs the in-scope stages of the pipeline (everything except crossfire, deferred for now) as slash commands.
+
+### Install
+
+This repo is a self-contained plugin — install it as a local plugin in Claude Code or Cowork mode. Once installed, all commands are namespaced under `/fd:`.
+
+### Quick start
+
+```
+/fd:start <feature-name> -- <one-line idea>
+/fd:next      # walks the rest of the pipeline; hard-gates prerequisites
+/fd:status    # snapshot of the active session
+```
+
+### Pipeline (v1, no crossfire)
+
+| Command | Wraps template | Output |
+|---|---|---|
+| `/fd:triage` | 02 | `01-triage.md` |
+| `/fd:explore` | 03 | `02-exploration.md` (interactive) |
+| `/fd:problem` | 04 | `03-problem-statement.md` |
+| `/fd:ui-draft` | 07 | `04-ui-contract.md` (user-facing only) |
+| `/fd:verify` | 12 | `07-verification.md` |
+| `/fd:spec` | 13 | `08-spec.md` |
+| `/fd:epics` | 14 | `09-epics.md` |
+| `/fd:pe-setup` | 15 | `10-pe-prompt.md` |
+
+Sessions live in `.feature-design/<slug>/` in your working folder. The numbering gaps at `05`, `06` are reserved for crossfire artifacts when that support lands.
+
+The orchestrator (`/fd:next`) hard-gates progression — it refuses to advance if a prerequisite stage hasn't completed. Pass `--force` to override deliberately.
+
+### Multi-model skills
+
+The plugin also ships three skills that let Cowork Claude shell out to other model CLIs for independent perspectives. They're foundation pieces for the still-deferred crossfire stages, but they're independently usable today for any "second-opinion" task.
+
+| Skill | What it does | CLI it wraps |
+|---|---|---|
+| `codex` | Invoke OpenAI Codex CLI for an independent OpenAI-side response | `codex exec` |
+| `gemini` | Invoke Google Gemini CLI for an independent Google-side response | `gemini -p` |
+| `claude-cli` | Spawn a fresh-context Claude session, separate from the moderator | `claude -p` from a scratch directory |
+
+Each skill checks whether its CLI is installed before calling, fails fast with a clear setup message if not, and documents the auth model the user needs (OAuth-friendly where possible — `claude-cli` deliberately avoids `--bare` so subscription auth keeps working).
+
+The moderator (Cowork Claude) doesn't participate in crossfire reviews itself — that would contaminate the adversarial signal. It coordinates and synthesizes. The three skills give it the three independent perspectives crossfire requires.
+
+### What's deferred
+
+Crossfire and decision-synthesis stages (Templates 05, 06, 08, 09, 10, 11) are not yet wired into slash commands. The skills are in place to support them when they land. Use the standalone templates directly if you want to run crossfire manually in the meantime.
 
 ## What This Is Not
 
