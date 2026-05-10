@@ -16,3 +16,10 @@ instances/
 # Notes and scratch
 scratch/
 *.tmp
+
+# Claude Code local config (created on plugin install / use)
+.claude/
+
+# Plugin runtime — per-feature session folders created by /fd:start
+# Contains state.json, raw idea, all stage outputs, and crossfire response files
+.feature-design/
