@@ -1,11 +1,13 @@
 ---
 name: claude-cli
-description: Invoke Claude Code CLI from inside a Cowork session to get an independent, fresh-context Claude response. Trigger when the user asks for a "fresh Claude opinion", "second Claude session", "independent Claude review", or when running a multi-model crossfire that needs a Claude-side perspective uncontaminated by the moderator's session. Spawns a separate `claude` process via the Bash tool with cwd-isolation and OAuth-friendly settings, captures the response, and returns it. Used by the feature-design plugin's crossfire stages.
+description: Invoke Claude Code CLI from inside a Cowork session to get an independent Claude response, separate from the moderator's session but with full access to the project's files. Trigger when the user asks for a "fresh Claude opinion", "second Claude session", "independent Claude review", or when running a multi-model crossfire that needs a Claude-side perspective. Spawns a separate `claude` process via the Bash tool from the project's working directory so it can read referenced files, captures the response, and returns it.
 ---
 
-# Claude Code CLI Runner — Fresh Claude Session
+# Claude Code CLI Runner — Independent Claude Session
 
-Invokes Claude Code CLI in non-interactive mode to spawn a **fresh-context** Claude session, independent from the parent Cowork session. This is the Claude side of crossfire: the moderator (Cowork Claude) cannot review its own work without bias, so a separate Claude instance does the review.
+Invokes Claude Code CLI in non-interactive mode to spawn an **independent** Claude session, separate from the parent (moderator) Cowork session but with **full access to the project's filesystem** so it can read any files referenced in the prompt.
+
+This matters because crossfire reviewers don't just respond to inlined prompt text — they read project files (PRD, Codex, Design Philosophy, the problem statement file itself, the existing codebase) the way a human reviewer would. Without filesystem access, crossfire reduces to pattern-matching on whatever was inlined.
 
 ## When to use
 
@@ -25,13 +27,19 @@ Do NOT trigger when:
    - **API key**: `ANTHROPIC_API_KEY` env var. Required if using `--bare` (which we don't, by design — see below).
 3. **Git for Windows installed** (Windows only) so the Bash tool inside the spawned Claude works. Without it, the spawned Claude's shell tool falls back to PowerShell, which sometimes breaks downstream tooling.
 
-## Why we don't use `--bare`
+## Why we don't use `--bare` and don't isolate the cwd
 
-`--bare` is Anthropic's documented "fully reproducible / scripted" mode that skips auto-discovery of CLAUDE.md, hooks, skills, plugins, MCP servers, and OAuth keychain. **It also requires `ANTHROPIC_API_KEY`** — the env-var-only auth path. Most users prefer to stay on their Pro/Max subscription rather than pay per-token, so this skill drops `--bare` and uses cwd isolation instead.
+`--bare` is Anthropic's documented "fully reproducible / scripted" mode that skips auto-discovery of CLAUDE.md, hooks, skills, plugins, MCP servers, and OAuth keychain. **It also requires `ANTHROPIC_API_KEY`** — the env-var-only auth path. Most users prefer to stay on their Pro/Max subscription rather than pay per-token, so this skill drops `--bare`.
 
-The trade-off: without `--bare`, the spawned Claude inherits user-global config from `~/.claude/` (global skills, hooks, settings). For adversarial review this is usually fine — global skills are generic productivity tools (xlsx, pdf, etc.) that don't activate on a text-review prompt. The cwd-side leaks (project CLAUDE.md, project hooks, project skills) are more dangerous, and the temp-dir technique below mitigates them.
+The skill also runs from the **project working directory** (no `cd /tmp` isolation). This is intentional: a crossfire reviewer needs to read the project's PRD, Codex, Design Philosophy, the problem statement file, and any code referenced in the prompt. Isolating from the cwd removes that capability and reduces crossfire to "respond to whatever the moderator inlined" — which defeats the point.
 
-If you specifically need a *guaranteed-bare* run (no global config either), tell the user to set `ANTHROPIC_API_KEY` and switch the invocation to use `--bare`. That's a deliberate opt-in.
+What we DO want to avoid:
+- The moderator's *conversation* leaking into the spawned Claude. This doesn't happen automatically — `claude -p` does not auto-resume the parent's session. So a bare `claude -p` from the project dir is already independent in the way that matters.
+
+What we accept:
+- The project's CLAUDE.md, project skills, and user-global `~/.claude/` config are loaded by the spawned Claude. For crossfire this is appropriate context, not contamination — design principles in CLAUDE.md are the kind of thing a reviewer should know.
+
+If you specifically need a *guaranteed-bare* run (no global config, no project context), set `ANTHROPIC_API_KEY` and add `--bare` to the invocation. That's a deliberate opt-in for cases where you want pure prompt-in / text-out with zero environment.
 
 ## How to invoke
 
@@ -53,49 +61,39 @@ Assemble the prompt for the fresh Claude. Critical: **do not include any referen
 
 For long prompts (anything over a few KB), use a file. Stdin to `claude -p` is capped at 10MB.
 
-### Step 3 — Run Claude in a clean temp directory
+### Step 3 — Run Claude from the project directory
 
 ```bash
-TEMP_DIR=$(mktemp -d)
-cd "$TEMP_DIR"
-
 claude -p "$PROMPT" \
-  --permission-mode dontAsk \
-  --tools "" \
-  --max-turns 1 \
+  --permission-mode default \
+  --allowed-tools "Read,Glob,Grep,WebFetch" \
+  --max-turns 8 \
   --no-session-persistence \
   --output-format text \
   2>/dev/null
-
-cd - >/dev/null
-rm -rf "$TEMP_DIR"
 ```
 
+Run from the project working directory (the cwd where the user is running the plugin — typically the repo root). The spawned Claude needs to read files referenced in the prompt; it cannot do that from a temp directory.
+
 Flag rationale:
-- **`cd $(mktemp -d)`** — the load-bearing isolation. Spawning from a temp directory means no `CLAUDE.md`, no `.mcp.json`, no project-level skills. This is the cheap substitute for `--bare`'s cwd cleanup.
-- `-p "$PROMPT"` — non-interactive print mode. Single-turn by default (does not auto-resume).
-- `--permission-mode dontAsk` — denies anything outside `permissions.allow`. Combined with `--tools ""`, makes this a pure text-in/text-out call.
-- `--tools ""` — disables all built-in tools. The fresh Claude can only think and write text — it can't read files, run commands, or fetch URLs. This is what you want for adversarial review.
-- `--max-turns 1` — hard cap to prevent the fresh Claude from looping into an agentic flow.
+- `-p "$PROMPT"` — non-interactive print mode. Does not auto-resume the parent session.
+- `--permission-mode default` — prompts before risky actions but, in practice, the allowed-tools list is read-only so nothing risky comes up. Don't use `dontAsk` here — it would deny the read calls we explicitly want.
+- `--allowed-tools "Read,Glob,Grep,WebFetch"` — read-only toolset. The reviewer can read project files, search them, and fetch external references, but cannot edit, write, or shell out. This is the right shape for adversarial review.
+- `--max-turns 8` — generous turn cap so the reviewer can do multi-step file exploration before producing the final response. Adjust upward for complex reviews; the cap exists to prevent runaway loops, not to constrain legitimate work.
 - `--no-session-persistence` — don't write this session to disk. Keeps your `/resume` history clean.
-- `--output-format text` — plain text on stdout (default, but explicit for clarity).
+- `--output-format text` — plain text on stdout.
 - `2>/dev/null` — suppresses spinners and progress indicators.
 
-For long prompts via file:
+For long prompts, write to a file in the session folder and pass via stdin or `$(cat ...)`:
 
 ```bash
-TEMP_DIR=$(mktemp -d)
-cp /path/to/prompt.md "$TEMP_DIR/prompt.md"
-cd "$TEMP_DIR"
-claude -p "$(cat prompt.md)" \
-  --permission-mode dontAsk \
-  --tools "" \
-  --max-turns 1 \
+claude -p "$(cat /path/to/prompt.md)" \
+  --permission-mode default \
+  --allowed-tools "Read,Glob,Grep,WebFetch" \
+  --max-turns 8 \
   --no-session-persistence \
   --output-format text \
   2>/dev/null
-cd - >/dev/null
-rm -rf "$TEMP_DIR"
 ```
 
 ### Step 4 — Capture and return
@@ -122,9 +120,9 @@ The framing matters because the user needs to understand this is NOT the moderat
 | `command not found` | Claude Code CLI not installed | Install per Setup |
 | Auth error / "no credentials" | `claude auth login` not run, or OAuth expired | Tell user to re-auth |
 | Stdin concat issues | Heredoc or other accidental stdin attachment to `-p` | Pass prompt as positional arg, not via redirected stdin |
-| Spawned Claude inherits parent context | Forgot to `cd` into a temp dir, or the parent cwd has a CLAUDE.md | Always use the temp-dir wrapper |
+| Reviewer can't see referenced files | Spawned Claude was run from a different cwd than where files live | Always run from the project root, not a temp dir |
 | First call slow | Cold start (model + tools warmup) | Expected; subsequent calls are faster |
-| Tries to use tools and refuses | Forgot `--tools ""` and `--permission-mode dontAsk` | Add both flags |
+| Tries to use tools beyond Read/Glob/Grep | `--allowed-tools` not enforced or wrong values | Verify the flag is passed correctly; the spawned Claude only gets tools you allowlist |
 
 ## Recursion safety
 

@@ -48,19 +48,21 @@ Stop. Do not attempt the call.
 
 Same as the Codex skill — assemble the prompt from the user's request, file contents, or a parent-flow-supplied template. For long prompts, use a file rather than inline shell-arg quoting.
 
-### Step 3 — Run Gemini
-
-The minimal invocation:
+### Step 3 — Run Gemini from the project directory
 
 ```bash
 gemini -p "$PROMPT" --output-format text -m flash 2>/dev/null
 ```
+
+Run from the project's working directory so Gemini can read files referenced in the prompt. Crossfire reviewers read the project's docs and code via the CLI's filesystem tools — they don't just respond to inlined text.
 
 Flag rationale:
 - `-p` — **mandatory** for non-interactive use. Without it, Gemini drops into the REPL when stdin is a TTY.
 - `--output-format text` — plain text on stdout. Use `--output-format json` for `{response, stats, error}` if the parent flow needs structured output.
 - `-m flash` — pick the fast/cheap model. For higher-quality reviews use `-m pro` (or whatever the current top-tier model is). Defer to user preference if specified.
 - `2>/dev/null` — suppresses Gemini's progress/spinner output.
+
+Note: Gemini auto-loads `GEMINI.md` from the cwd as additional context, similar to Claude's CLAUDE.md. For crossfire this is fine — it's project-scoped context the reviewer should see. If you specifically need a clean run with no project context, run from a temp directory (but you'll lose file-access to the very docs the prompt references — almost never what you want for crossfire).
 
 For long prompts:
 

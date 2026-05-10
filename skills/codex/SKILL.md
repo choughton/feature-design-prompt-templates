@@ -54,18 +54,18 @@ Decide what prompt to send Codex. For most uses this comes from:
 
 If the prompt is long, write it to a temp file rather than passing it inline — long shell-arg strings have quoting hazards.
 
-### Step 3 — Run Codex
-
-The minimal invocation:
+### Step 3 — Run Codex from the project directory
 
 ```bash
 codex exec --skip-git-repo-check --sandbox read-only "$PROMPT" 2>/dev/null
 ```
 
+Run from the project's working directory (typically the repo root) so Codex can read files referenced in the prompt. Crossfire reviewers don't just respond to inlined text — they read the project's PRD, Codex docs, code, etc. via the CLI's filesystem tools.
+
 Flag rationale:
 - `exec` — non-interactive subcommand; required to avoid landing in the Codex REPL
-- `--skip-git-repo-check` — Codex refuses to run outside a git repo by default; this disables the check
-- `--sandbox read-only` — safest default for review/critique work; no file writes, no network. Use `workspace-write` if Codex needs to write files (rare for crossfire/review)
+- `--skip-git-repo-check` — Codex refuses to run outside a git repo by default; this disables the check (handy if the project happens to not be a git repo, though most are)
+- `--sandbox read-only` — safest default for review work. Codex can read files; cannot write, edit, or hit network. Right shape for adversarial review.
 - `2>/dev/null` — suppresses Codex's progress/thinking-token stream on stderr; the final response goes to stdout
 
 For long prompts, prefer reading from a file:
